@@ -43,13 +43,27 @@ GeoIP data for 66.39.54.27 - www.perlmonks.org:
    Anon Proxy: NO
 ```
 
-## Dependencies
+## PREREQUISITES
 
 - perl-5.12.0
 - Socket (CORE since per-5.000)
 - [Archive::Zip](https://metacpan.org/release/Archive-Zip)
 - [Text::CSV_XS](https://metacpan.org/release/Text-CSV_XS)-1.35
 - [Net::CIDR](https://metacpan.org/release/Net-CIDR)
+
+## INSTALLATION
+
+```
+$ wget -m -L -nd -np -nH \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN-CSV.zip  \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
+$ echo "create database geoip;" | psql -f -
+$ perl ./geoip
+$ ln geoip ~/bin/
+```
+
+Depending on the amount of memory you have, this might take a while.
 
 ## TODO
 
@@ -58,6 +72,25 @@ GeoIP data for 66.39.54.27 - www.perlmonks.org:
 - Help / Manual
 - Options
 
-## Thanks
+## THANKS
 
 Thanks to cavac for the inspiration
+
+## AUTHOR
+
+H.Merijn Brand <h.m.brand@xs4all.nl>
+
+## COPYRIGHT AND LICENSE
+
+The GeoLite2 databases are distributed under the Creative Commons
+Attribution-ShareAlike 4.0 International License. The attribution
+requirement may be met by including the following in all advertising
+and documentation mentioning features of or use of this database.
+
+This tool uses the GeoLite2 data created by MaxMind, available from
+[http://www.maxmind.com](http://www.maxmind.com).
+
+Copyright (c) 2018-2018 H.Merijn Brand.  All rights reserved.
+
+This tool is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
