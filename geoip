@@ -1,0 +1,441 @@
+#!/pro/bin/perl
+
+use 5.12.0;
+use warnings;
+
+our $VERSION = "0.04 - 20181126";
+our $CMD = $0 =~ s{.*/}{}r;
+
+use DBI;
+use Socket;
+use Net::CIDR;
+#se Data::Peek;
+use Archive::Zip;
+use Text::CSV_XS qw( csv );
+
+my $dbh = DBI->connect ("dbi:Pg:dbname=geoip", undef, undef, {
+    AutoCommit		=> 0,
+    RaiseError		=> 1,
+    PrintError		=> 1,
+    ShowErrorStatement	=> 1,
+    });
+
+# Based on GeoIP2 CSV databases
+#  City:   http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip
+#  Country http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
+#  ASN     http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN-CSV.zip
+
+unless (grep m/\b country $/ix => $dbh->tables (undef, undef, undef, undef)) {
+    say "Create table stamps";
+    $dbh->do (qq; create table stamps (                                                                                                                                       
+	name		text		not null	primary key,
+	stamp		bigint);
+	);
+    say "Create table continent";
+    $dbh->do (qq; create table continent (                                                                                                                                       
+	id		char (4)	not null	primary key,
+	name		text);
+	);
+    say "Create table country";
+    $dbh->do (qq; create table country (                                                                                                                                       
+	id		bigint		not null	primary key,
+	name		text		not null,
+	iso		text,
+	continent	char (4),
+	eu		smallint);
+	);
+    say "Create table ipv4"; # Country based
+    $dbh->do (qq; create table ipv4 (                                                                                                                                       
+	cidr		cidr		not null	primary key,
+	id		bigint,
+	ip_from		text		not null,
+	ip_to		text		not null,
+	ip_from_n	bigint		not null,
+	ip_to_n		bigint		not null,
+	reg_country_id	bigint,
+	rep_country_id	bigint,
+	anon_proxy	smallint,
+	satellite	smallint);
+	);
+    $dbh->do (qq; create index i_ipv4_ip on ipv4 using btree (ip_from_n, ip_to_n););
+    say "Create table provider";
+    $dbh->do (qq; create table provider (                                                                                                                                       
+	cidr		cidr		not null	primary key,
+	id		bigint,
+	name		text,
+	ip_from		text,
+	ip_to		text,
+	ip_from_n	bigint,
+	ip_to_n		bigint);
+	);
+    $dbh->do (qq; create index i_provider_ip on provider using btree (ip_from_n, ip_to_n););
+    say "Create table city";
+    $dbh->do (qq; create table city (                                                                                                                                       
+	id		bigint		not null	primary key,
+	name		text,
+	country_id	bigint,
+	metro_code	text,
+	tz		text,
+	eu		smallint);
+	);
+    say "Create table ipc4"; # City based
+    $dbh->do (qq; create table ipc4 (                                                                                                                                       
+	cidr		cidr		not null	primary key,
+	id		bigint,
+	ip_from		text		not null,
+	ip_to		text		not null,
+	ip_from_n	bigint		not null,
+	ip_to_n		bigint		not null,
+	reg_country_id	bigint,
+	rep_country_id	bigint,
+	anon_proxy	smallint,
+	satellite	smallint,
+	postal_code	text,
+	latitude	text,
+	longitude	text,
+	accuracy	text );
+	);
+    $dbh->do (qq; create index i_ipc4_ip on ipv4 using btree (ip_from_n, ip_to_n););
+    $dbh->commit;
+    }
+
+my %cont; # Continents
+
+my %stmp;
+{   my $sth = $dbh->prepare ("select name, stamp from stamps");
+    $sth->execute;
+    while (my @s = $sth->fetchrow_array) {
+	$stmp{$s[0]} = $s[1];
+	}
+    }
+
+my $zcfn = "GeoLite2-Country-CSV.zip";
+if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+    my $zip = Archive::Zip->new;
+    $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
+    my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
+
+    say "Reading Country       info ...";
+    my %ctry;
+    $dbh->do ("truncate table continent");
+    foreach my $cnm (grep m{\bGeoLite2-Country-Locations-en.csv$}i => @cmn) {
+	my $m = $zip->memberNamed ($cnm)	or next;
+	my $c = $m->contents		or next;
+	# geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,is_in_european_union
+	# 49518,en,AF,Africa,RW,Rwanda,0
+	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    $cont{$_{continent_code}} ||= $_{continent_name};
+	    my $id = $_{geoname_id} or return;
+	    my $ctry = {
+		id		=> $id,
+		name		=> $_{country_name},
+		iso		=> $_{country_iso_code},
+		continent	=> $_{continent_code},
+		eu		=> $_{is_in_european_union},
+		};
+	    $ctry{$id} //= $ctry;
+	    #$ctry{$_{country_iso_code}} //= $ctry;
+	    });
+	}
+    {	$dbh->do ("truncate table continent");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into continent values (?, ?)");
+	$sti->execute ($_, $cont{$_}) for keys %cont;
+	$sti->finish;
+	$dbh->commit;
+	}
+    {	$dbh->do ("truncate table country");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into country values (?, ?, ?, ?, ?)");
+	$sti->execute (@{$_}{qw( id name iso continent eu )}) for values %ctry;
+	$sti->finish;
+	$dbh->commit;
+	}
+
+    say "Reading Country  IPv4 info ...";
+    foreach my $cnm (grep m{\bGeoLite2-Country-Blocks-IPv4.csv$}i => @cmn) {
+	my $m = $zip->memberNamed ($cnm)	or next;
+	my $c = $m->contents		or next;
+	# network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider
+	# 1.0.0.0/24,2077456,2077456,,0,0
+	$dbh->do ("truncate table ipv4");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into ipv4 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    my $cidr = $_{network};
+	    my @rng = Net::CIDR::cidr2range ($cidr);
+	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
+	    my ($F, $T) = map { unpack "L>", inet_aton $_ } $f, $t;
+	    my $rec = {
+		cidr		=> $cidr,
+		id		=> $_{geoname_id} || undef,
+		ip_from		=> $f,
+		ip_to		=> $t,
+		ip_from_n	=> $F,
+		ip_to_n		=> $T,
+		reg_country_id	=> $_{registered_country_geoname_id}  || undef,
+		rep_country_id	=> $_{represented_country_geoname_id} || undef,
+		anon_proxy	=> $_{is_anonymous_proxy},
+		satellite	=> $_{is_satellite_provider},
+		};
+	    $sti->execute (@{$rec}{qw( cidr id ip_from ip_to ip_from_n ip_to_n
+		reg_country_id rep_country_id anon_proxy satellite )});
+	    });
+	$sti->finish;
+	$dbh->commit;
+	}
+    my $t = (stat $zcfn)[9];
+    if ($stmp{$zcfn}) {
+	$dbh->do ("update stamps set stamp = $t where name = '$zcfn'");
+	}
+    else {
+	$dbh->do ("insert into stamps values ('$zcfn', $t)");
+	}
+    $dbh->commit;
+    }
+else {
+    my $sth = $dbh->prepare ("select * from continent");
+    $sth->execute;
+    while (my $r = $sth->fetch) {
+	$cont{$r->[0]} = $r->[1];
+	}
+    }
+
+$zcfn = "GeoLite2-ASN-CSV.zip";
+if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+    my $zip = Archive::Zip->new;
+    $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
+    my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
+
+    say "Reading Provider IPv4 info ...";
+    my %prov;
+    foreach my $cnm (grep m{\bGeoLite2-ASN-Blocks-IPv4.csv$}i => @cmn) {
+	my $m = $zip->memberNamed ($cnm)	or next;
+	my $c = $m->contents		or next;
+	# network,autonomous_system_number,autonomous_system_organization
+	# 1.0.0.0/24,13335,"Cloudflare, Inc."
+	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    my $cidr = $_{network};
+	    my @rng = Net::CIDR::cidr2range ($cidr);
+	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
+	    my ($F, $T) = map { unpack "L>", inet_aton $_ } $f, $t;
+	    $prov{$cidr} //= {
+		cidr		=> $cidr,
+		id		=> $_{autonomous_system_number} || undef, # All NULL
+		name		=> $_{autonomous_system_organization},
+		ip_from		=> $f,
+		ip_to		=> $t,
+		ip_from_n	=> $F,
+		ip_to_n		=> $T,
+		};
+	    });
+	}
+    {	$dbh->do ("truncate table provider");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into provider values (?, ?, ?, ?, ?, ?, ?)");
+	$sti->execute (@{$_}{qw( cidr id name ip_from ip_to ip_from_n ip_to_n )}) for values %prov;
+	$sti->finish;
+	$dbh->commit;
+	}
+    my $t = (stat $zcfn)[9];
+    if ($stmp{$zcfn}) {
+	$dbh->do ("update stamps set stamp = $t where name = '$zcfn'");
+	}
+    else {
+	$dbh->do ("insert into stamps values ('$zcfn', $t)");
+	}
+    $dbh->commit;
+    }
+
+$zcfn = "GeoLite2-City-CSV.zip";
+if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+    my $zip = Archive::Zip->new;
+    $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
+    my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
+
+    say "Reading City          info ...";
+    my (%country, %city);
+    {	my $sth = $dbh->prepare ("select id, name from country");
+	$sth->execute;
+	while (my $r = $sth->fetch) { $country{$r->[1]} = $r->[0] }
+	}
+    foreach my $cnm (grep m{\bGeoLite2-City-Locations-en.csv$}i => @cmn) {
+	my $m = $zip->memberNamed ($cnm)	or next;
+	my $c = $m->contents		or next;
+	# geoname_id,locale_code,continent_code,continent_name,country_iso_code,
+	#   country_name,subdivision_1_iso_code,subdivision_1_name,
+	#   subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,
+	#   time_zone,is_in_european_union
+	# 5819,en,EU,Europe,CY,Cyprus,02,Limassol,,,Souni,,Asia/Nicosia,1
+	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    $city{$_{geoname_id}} //= {
+		id		=> $_{geoname_id},
+		name		=> $_{city_name},
+		country_id	=> $country{$_{country_name}},
+		metro_code	=> $_{metro_code},
+		tz		=> $_{time_zone},
+		eu		=> $_{is_in_european_union},
+		};
+	    # Subdivisions to store?
+	    });
+	}
+    {	$dbh->do ("truncate table city");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into city values (?, ?, ?, ?, ?, ?)");
+	$sti->execute (@{$_}{qw( id name country_id metro_code tz eu )}) for values %city;
+	$sti->finish;
+	$dbh->commit;
+	}
+    say "Reading City     IPv4 info ...";
+    foreach my $cnm (grep m{\bGeoLite2-City-Blocks-IPv4.csv$}i => @cmn) {
+	my $m = $zip->memberNamed ($cnm)	or next;
+	my $c = $m->contents		or next;
+	# network,geoname_id,registered_country_geoname_id,
+	#   represented_country_geoname_id,is_anonymous_proxy,
+	#   is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
+	# 1.0.0.0/24,2062391,2077456,,0,0,5412,-34.1551,138.7482,1000
+	$dbh->do ("truncate table ipc4");
+	$dbh->commit;
+	my $sti = $dbh->prepare ("insert into ipc4 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    my $cidr = $_{network};
+	    my @rng = Net::CIDR::cidr2range ($cidr);
+	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
+	    my ($F, $T) = map { unpack "L>", inet_aton $_ } $f, $t;
+	    my $rec = {
+		cidr		=> $cidr,
+		id		=> $_{geoname_id} || undef,
+		ip_from		=> $f,
+		ip_to		=> $t,
+		ip_from_n	=> $F,
+		ip_to_n		=> $T,
+		reg_country_id	=> $_{registered_country_geoname_id}  || undef,
+		rep_country_id	=> $_{represented_country_geoname_id} || undef,
+		anon_proxy	=> $_{is_anonymous_proxy},
+		satellite	=> $_{is_satellite_provider},
+		postal_code	=> $_{postal_code},
+		latitude	=> $_{latitude},
+		longitude	=> $_{longitude},
+		accuracy	=> $_{accuracy_radius},
+		};
+	    $sti->execute (@{$rec}{qw( cidr id ip_from ip_to ip_from_n ip_to_n
+		reg_country_id rep_country_id anon_proxy satellite postal_code
+		latitude longitude accuracy )});
+	    });
+	$sti->finish;
+	$dbh->commit;
+	}
+    my $t = (stat $zcfn)[9];
+    if ($stmp{$zcfn}) {
+	$dbh->do ("update stamps set stamp = $t where name = '$zcfn'");
+	}
+    else {
+	$dbh->do ("insert into stamps values ('$zcfn', $t)");
+	}
+    $dbh->commit;
+    }
+
+binmode STDERR, ":encoding(utf-8)";
+binmode STDOUT, ":encoding(utf-8)";
+
+my %seen;
+my %found;
+while (@ARGV) {
+    my $ip = shift or next;
+
+    my $host;
+    if ($ip =~ m/^\d{1,3}(?:\.\d{1,3}){3}$/) {
+	$host = gethostbyaddr (inet_aton ($ip), AF_INET);
+	$seen{$ip}++;
+	$seen{$host}++;
+	}
+    else {
+	my ($name, $aliases, $type, $len, @addr) = gethostbyname ($ip);
+	$host = $name;
+	$ip = inet_ntoa (shift @addr);
+	push @ARGV, grep { $_ && !$seen{$_}++ } @addr, split m/\s+/ => $aliases;
+	}
+
+    $found{$ip} and next;
+
+    my $in = unpack "L>" => inet_aton ($ip);
+    #say "Look up $ip ($in) ...";
+
+    my $sth = $dbh->prepare ("select * from ipv4 where ip_from_n <= $in and ip_to_n >= $in");
+    my $stc = $dbh->prepare ("select * from country where id = ?");
+    my $stC = $dbh->prepare ("select * from city    where id = ?");
+    my $prov = do {
+	my $stp = $dbh->prepare ("select name from provider where ip_from_n <= $in and ip_to_n >= $in");
+	$stp->execute;
+	my @p; while (my $p = $stp->fetch) { push @p, $p->[0]; }
+	join " \x{2227} " => @p;
+	};
+    my $st4 = $dbh->prepare ("select * from ipc4 where ip_from_n <= $in and ip_to_n >= $in");
+    $sth->execute;
+    while (my $i = $sth->fetchrow_hashref) {
+	$i->{provider} = $prov;
+	$i->{ip}       = $ip;
+	$i->{ip_n}     = $in;
+	$i->{hostname} = $host;
+	foreach my $tp ("reg", "rep") {
+	    my $cid = delete $i->{"${tp}_country_id"} or next;
+	    $stc->execute ($cid);
+	    my $c = $stc->fetchrow_hashref or next;
+	    $i->{"${tp}_ctry_$_"} = $c->{$_} for keys %$c;
+	    delete $i->{"${tp}_ctry_id"};
+	    $i->{reg_continent} = $cont{delete $i->{reg_ctry_continent}} || "";
+	    }
+	$st4->execute;
+	if (my $c = $st4->fetchrow_hashref) {
+	    $stc->execute (delete $c->{reg_country_id});
+	    if (my $ctry = $stc->fetchrow_hashref) {
+		$c->{country} = $ctry->{name};
+		}
+	    $i->{$_} = $c->{$_} for qw( postal_code latitude longitude accuracy );
+	    $stC->execute (delete $c->{id});
+	    if (my $city = $stC->fetchrow_hashref) {
+		$i->{"city_$_"} = $city->{$_} for qw( name tz metro_code );
+		}
+	    $stC->finish;
+	    }
+	$st4->finish;
+	$found{$ip} //= $i;
+	}
+    $stc->finish;
+    }
+
+for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} } values %found) {
+    #DDumper $_;
+    my ($lat, $lon, $acc) = ($_->{latitude}, $_->{longitude}, $_->{accuracy});
+    say "GeoIP data for $_->{ip} - $_->{hostname}:";
+    say "   CIDR      : $_->{cidr}";
+    say "   IP range  : $_->{ip_from} - $_->{ip_to}";
+    say "   Provider  : $_->{provider}";
+    say "   City      : ", join ", " => grep m/\S/ => map { $_ || "" }
+	$_->{city_name}, $_->{city_metro_code}, $_->{postal_code};
+    say "   Country   : $_->{reg_ctry_iso}  $_->{reg_ctry_name}";
+    say "   Continent : $_->{reg_continent}";
+    if ($lat || $lon) {
+	say "   Location  : $lat / $lon ($acc)\t",
+	    dec2dms ($lat), " / ", dec2dms ($lon);
+	my $z = 16 - int log $acc;
+	say "               https://www.google.com/maps/place/\@$lat,$lon,${z}z";
+	}
+    say "   Timezone  : ", $_->{city_tz} || "";
+    say "   EU member : ", $_->{reg_ctry_eu} ? "YES" : "NO";
+    say "   Satellite : ", $_->{satellite}   ? "YES" : "NO";
+    say "   Anon Proxy: ", $_->{anon_proxy}  ? "YES" : "NO";
+    }
+
+$dbh->rollback;
+$dbh->disconnect;
+
+sub dec2dms {
+    my $dec = shift or return "";
+
+    my $deg = int $dec;
+    my $dm  = abs ($dec - $deg) * 60;
+    my $min = int $dm;
+    my $sec = ($dm - $min) * 60;
+    sprintf "%d\x{00b0}%02d'%05.2f\"", $deg, $min, $sec;
+    } # dec2dms
