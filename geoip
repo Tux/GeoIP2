@@ -120,7 +120,7 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     $dbh->do ("truncate table continent");
     foreach my $cnm (grep m{\bGeoLite2-Country-Locations-en.csv$}i => @cmn) {
 	my $m = $zip->memberNamed ($cnm)	or next;
-	my $c = $m->contents		or next;
+	my $c = $m->contents			or next;
 	# geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,is_in_european_union
 	# 49518,en,AF,Africa,RW,Rwanda,0
 	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
@@ -155,13 +155,15 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     say "Reading Country  IPv4 info ...";
     foreach my $cnm (grep m{\bGeoLite2-Country-Blocks-IPv4.csv$}i => @cmn) {
 	my $m = $zip->memberNamed ($cnm)	or next;
-	my $c = $m->contents		or next;
+	my $c = $m->contents			or next;
 	# network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider
 	# 1.0.0.0/24,2077456,2077456,,0,0
 	$dbh->do ("truncate table ipv4");
 	$dbh->commit;
+	my $n;
 	my $sti = $dbh->prepare ("insert into ipv4 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    ++$n % 1000 or print STDERR " $n\r";
 	    my $cidr = $_{network};
 	    my @rng = Net::CIDR::cidr2range ($cidr);
 	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
@@ -208,18 +210,22 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
 
     say "Reading Provider IPv4 info ...";
-    my %prov;
     foreach my $cnm (grep m{\bGeoLite2-ASN-Blocks-IPv4.csv$}i => @cmn) {
 	my $m = $zip->memberNamed ($cnm)	or next;
-	my $c = $m->contents		or next;
+	my $c = $m->contents			or next;
 	# network,autonomous_system_number,autonomous_system_organization
 	# 1.0.0.0/24,13335,"Cloudflare, Inc."
+	$dbh->do ("truncate table provider");
+	$dbh->commit;
+	my $n;
+	my $sti = $dbh->prepare ("insert into provider values (?, ?, ?, ?, ?, ?, ?)");
 	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    ++$n % 1000 or print STDERR " $n\r";
 	    my $cidr = $_{network};
 	    my @rng = Net::CIDR::cidr2range ($cidr);
 	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
 	    my ($F, $T) = map { unpack "L>", inet_aton $_ } $f, $t;
-	    $prov{$cidr} //= {
+	    my $rec = {
 		cidr		=> $cidr,
 		id		=> $_{autonomous_system_number} || undef, # All NULL
 		name		=> $_{autonomous_system_organization},
@@ -228,12 +234,8 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
 		ip_from_n	=> $F,
 		ip_to_n		=> $T,
 		};
+	    $sti->execute (@{$rec}{qw( cidr id name ip_from ip_to ip_from_n ip_to_n )});
 	    });
-	}
-    {	$dbh->do ("truncate table provider");
-	$dbh->commit;
-	my $sti = $dbh->prepare ("insert into provider values (?, ?, ?, ?, ?, ?, ?)");
-	$sti->execute (@{$_}{qw( cidr id name ip_from ip_to ip_from_n ip_to_n )}) for values %prov;
 	$sti->finish;
 	$dbh->commit;
 	}
@@ -261,14 +263,19 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
 	}
     foreach my $cnm (grep m{\bGeoLite2-City-Locations-en.csv$}i => @cmn) {
 	my $m = $zip->memberNamed ($cnm)	or next;
-	my $c = $m->contents		or next;
+	my $c = $m->contents			or next;
 	# geoname_id,locale_code,continent_code,continent_name,country_iso_code,
 	#   country_name,subdivision_1_iso_code,subdivision_1_name,
 	#   subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,
 	#   time_zone,is_in_european_union
 	# 5819,en,EU,Europe,CY,Cyprus,02,Limassol,,,Souni,,Asia/Nicosia,1
+	$dbh->do ("truncate table city");
+	$dbh->commit;
+	my $n;
+	my $sti = $dbh->prepare ("insert into city values (?, ?, ?, ?, ?, ?)");
 	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
-	    $city{$_{geoname_id}} //= {
+	    ++$n % 1000 or print STDERR " $n\r";
+	    my $rec = {
 		id		=> $_{geoname_id},
 		name		=> $_{city_name},
 		country_id	=> $country{$_{country_name}},
@@ -277,27 +284,25 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
 		eu		=> $_{is_in_european_union},
 		};
 	    # Subdivisions to store?
+	    $sti->execute (@{$rec}{qw( id name country_id metro_code tz eu )});
 	    });
-	}
-    {	$dbh->do ("truncate table city");
-	$dbh->commit;
-	my $sti = $dbh->prepare ("insert into city values (?, ?, ?, ?, ?, ?)");
-	$sti->execute (@{$_}{qw( id name country_id metro_code tz eu )}) for values %city;
 	$sti->finish;
 	$dbh->commit;
 	}
     say "Reading City     IPv4 info ...";
     foreach my $cnm (grep m{\bGeoLite2-City-Blocks-IPv4.csv$}i => @cmn) {
 	my $m = $zip->memberNamed ($cnm)	or next;
-	my $c = $m->contents		or next;
+	my $c = $m->contents			or next;
 	# network,geoname_id,registered_country_geoname_id,
 	#   represented_country_geoname_id,is_anonymous_proxy,
 	#   is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
 	# 1.0.0.0/24,2062391,2077456,,0,0,5412,-34.1551,138.7482,1000
 	$dbh->do ("truncate table ipc4");
 	$dbh->commit;
+	my $n;
 	my $sti = $dbh->prepare ("insert into ipc4 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	csv (in => \$c, headers => "auto", out => undef, on_in => sub {
+	    ++$n % 1000 or print STDERR " $n\r";
 	    my $cidr = $_{network};
 	    my @rng = Net::CIDR::cidr2range ($cidr);
 	    my ($f, $t) = split m/\s*-\s*/ => $rng[0];
@@ -422,9 +427,9 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} } values %found) {
 	say "               https://www.google.com/maps/place/\@$lat,$lon,${z}z";
 	}
     say "   Timezone  : ", $_->{city_tz} || "";
-    say "   EU member : ", $_->{reg_ctry_eu} ? "YES" : "NO";
-    say "   Satellite : ", $_->{satellite}   ? "YES" : "NO";
-    say "   Anon Proxy: ", $_->{anon_proxy}  ? "YES" : "NO";
+    say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
+    say "   Satellite : ", $_->{satellite}   ? "Yes" : "No";
+    say "   Anon Proxy: ", $_->{anon_proxy}  ? "Yes" : "No";
     }
 
 $dbh->rollback;
