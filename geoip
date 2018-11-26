@@ -349,13 +349,17 @@ while (@ARGV) {
     my $ip = shift or next;
 
     my $host;
-    if ($ip =~ m/^\d{1,3}(?:\.\d{1,3}){3}$/) {
-	$host = gethostbyaddr (inet_aton ($ip), AF_INET);
+    if ($ip =~ m/^\d{1,3}(?:\.\d{1,3}){3}$/ and my $n = inet_aton ($ip)) {
+	$host = gethostbyaddr ($n, AF_INET);
 	$seen{$ip}++;
 	$seen{$host}++;
 	}
     else {
 	my ($name, $aliases, $type, $len, @addr) = gethostbyname ($ip);
+	unless (@addr) {
+	    warn "Cannot get the IP for $ip\n";
+	    next;
+	    }
 	$host = $name;
 	$ip = inet_ntoa (shift @addr);
 	push @ARGV, grep { $_ && !$seen{$_}++ } @addr, split m/\s+/ => $aliases;
