@@ -350,9 +350,9 @@ while (@ARGV) {
 
     my $host;
     if ($ip =~ m/^\d{1,3}(?:\.\d{1,3}){3}$/ and my $n = inet_aton ($ip)) {
-	$host = gethostbyaddr ($n, AF_INET);
 	$seen{$ip}++;
-	$seen{$host}++;
+	# We might not have DNS when working off-line
+	$host = gethostbyaddr ($n, AF_INET) and $seen{$host}++;
 	}
     else {
 	my ($name, $aliases, $type, $len, @addr) = gethostbyname ($ip);
@@ -362,7 +362,11 @@ while (@ARGV) {
 	    }
 	$host = $name;
 	$ip = inet_ntoa (shift @addr);
-	push @ARGV, grep { $_ && !$seen{$_}++ } @addr, split m/\s+/ => $aliases;
+	$seen{$ip}++;
+	$seen{$host}++;
+	push @ARGV, grep { $_ && !$seen{$_}++ }
+	    (map { inet_ntoa $_ } @addr),
+	    split m/\s+/ => $aliases;
 	}
 
     $found{$ip} and next;
@@ -385,7 +389,7 @@ while (@ARGV) {
 	$i->{provider} = $prov;
 	$i->{ip}       = $ip;
 	$i->{ip_n}     = $in;
-	$i->{hostname} = $host;
+	$i->{hostname} = $host // "hostname not found";
 	foreach my $tp ("reg", "rep") {
 	    my $cid = delete $i->{"${tp}_country_id"} or next;
 	    $stc->execute ($cid);
@@ -413,7 +417,9 @@ while (@ARGV) {
     $stc->finish;
     }
 
-for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} } values %found) {
+for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
+	    $a->{ip_n}      <=> $b->{ip_n}
+	  } values %found) {
     #DDumper $_;
     my ($lat, $lon, $acc) = ($_->{latitude}, $_->{longitude}, $_->{accuracy});
     say "GeoIP data for $_->{ip} - $_->{hostname}:";
