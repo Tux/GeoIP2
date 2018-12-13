@@ -6,12 +6,28 @@ use warnings;
 our $VERSION = "0.04 - 20181126";
 our $CMD = $0 =~ s{.*/}{}r;
 
+sub usage {
+    my $err = shift and select STDERR;
+    say "usage: $CMD [--fetch] [--no-update] ip|host ...";
+    exit $err;
+    } # usage
+
 use DBI;
 use Socket;
 use Net::CIDR;
 #se Data::Peek;
+use LWP::Simple;
 use Archive::Zip;
 use Text::CSV_XS qw( csv );
+use Getopt::Long qw(:config bundling);
+GetOptions (
+    "help|?"		=> sub { usage (0); },
+    "V|version"		=> sub { say "$CMD [$VERSION]"; exit 0; },
+
+    "u|update!"		=> \(my $opt_u = 1),
+    "f|fetch!"		=> \(my $opt_f = 0),
+    "v|verbose:1"	=> \(my $opt_v = 0),
+    ) or usage (1);
 
 my $dbh = DBI->connect ("dbi:Pg:dbname=geoip", undef, undef, {
     AutoCommit		=> 0,
@@ -97,6 +113,9 @@ unless (grep m/\b country $/ix => $dbh->tables (undef, undef, undef, undef)) {
 	);
     $dbh->do (qq; create index i_ipc4_ip on ipv4 using btree (ip_from_n, ip_to_n););
     $dbh->commit;
+
+    # grant connect on database geoip             to other_user;
+    # grant select on all tables in schema public to other_user;
     }
 
 my %cont; # Continents
@@ -109,8 +128,26 @@ my %stmp;
 	}
     }
 
+if ($opt_f) {
+    my $base = "http://geolite.maxmind.com/download/geoip/database";
+    foreach my $f (qw(	GeoLite2-ASN-CSV.zip
+			GeoLite2-Country-CSV.zip
+			GeoLite2-City-CSV.zip
+			)) {
+	my @s = stat $f;
+	my @d = localtime $s[9];
+	printf "%9d-%02d-%02d %02d:%02d:%02d %9d %s\n",
+	    $d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7], $f;
+	my $c = mirror ("$base/$f", $f);
+	@s = stat $f;
+	@d = localtime $s[9];
+	printf "%4d %4d-%02d-%02d %02d:%02d:%02d %9d %s\n", $c,
+	    $d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7], $f;
+	}
+    }
+
 my $zcfn = "GeoLite2-Country-CSV.zip";
-if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
@@ -204,7 +241,7 @@ else {
     }
 
 $zcfn = "GeoLite2-ASN-CSV.zip";
-if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
@@ -250,7 +287,7 @@ if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     }
 
 $zcfn = "GeoLite2-City-CSV.zip";
-if (-s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
