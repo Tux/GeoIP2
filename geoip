@@ -128,21 +128,24 @@ my %stmp;
 	}
     }
 
+sub dtsz {
+    my $f = shift;
+    -f $f or return "-";
+    my @s = stat $f;
+    my @d = localtime $s[9];
+    sprintf "%4d-%02d-%02d %02d:%02d:%02d %9d",
+	$d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7];
+    } # dtsz
+
 if ($opt_f) {
     my $base = "http://geolite.maxmind.com/download/geoip/database";
     foreach my $f (qw(	GeoLite2-ASN-CSV.zip
 			GeoLite2-Country-CSV.zip
 			GeoLite2-City-CSV.zip
 			)) {
-	my @s = stat $f;
-	my @d = localtime $s[9];
-	printf "%9d-%02d-%02d %02d:%02d:%02d %9d %s\n",
-	    $d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7], $f;
+	printf     "%34s %s\n",     dtsz ($f), $f;
 	my $c = mirror ("$base/$f", $f);
-	@s = stat $f;
-	@d = localtime $s[9];
-	printf "%4d %4d-%02d-%02d %02d:%02d:%02d %9d %s\n", $c,
-	    $d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7], $f;
+	printf "%4d %29s %s\n", $c, dtsz ($f), $f;
 	}
     }
 
