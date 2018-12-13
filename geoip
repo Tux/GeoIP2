@@ -470,7 +470,9 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
     if ($lat || $lon) {
 	say "   Location  : $lat / $lon ($acc)\t",
 	    dec2dms ($lat), " / ", dec2dms ($lon);
+	# OSM max zoom = 19, Google Maps max zoom = 21
 	my $z = 16 - int log $acc;
+	say "               https://www.openstreetmap.org/#map=$z/$lat/$lon";
 	say "               https://www.google.com/maps/place/\@$lat,$lon,${z}z";
 	}
     say "   Timezone  : ", $_->{city_tz} || "";
