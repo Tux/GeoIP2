@@ -54,16 +54,21 @@ GeoIP data for 66.39.54.27 - www.perlmonks.org:
 ## INSTALLATION
 
 ```
-$ wget -m -L -nd -np -nH \
- http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN-CSV.zip  \
- http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip \
- http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
 $ echo "create database geoip;" | psql -f -
-$ perl ./geoip
+$ perl ./geoip --fetch
 $ ln geoip ~/bin/
 ```
 
 Depending on the amount of memory you have, this might take a while.
+
+You can also fetch the files yourself
+
+```
+$ wget -m -L -nd -np -nH \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-ASN-CSV.zip  \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip \
+ http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
+```
 
 ## TODO
 
