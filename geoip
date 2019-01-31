@@ -489,7 +489,7 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	}
     $here->{Longitude} or $here = undef;
     }
-use DP;DDumper $here;
+#DDumper $here;
 
 for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $a->{ip_n}      <=> $b->{ip_n}
