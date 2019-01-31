@@ -551,5 +551,5 @@ sub distance {
 	    cos (deg2rad ($lat_c)) * cos (deg2rad ($lat_s)) *
 		sin ($dlon / 2) * sin ($dlon / 2);
 
-    return 6371 * 2 * atan2 (sqrt ($x), sqrt (1 - $x)); # km
+    return $rad * 2 * atan2 (sqrt ($x), sqrt (1 - $x)); # km
     } # distance
