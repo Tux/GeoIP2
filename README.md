@@ -60,10 +60,21 @@ without these.
 
 ## INSTALLATION
 
+Using PostgreSQL:
 ```
 $ echo "create database geoip;" | psql -f -
 $ perl ./geoip --fetch
 $ ln geoip ~/bin/
+```
+
+Using SQLite (database will be close to 500 Mb):
+```
+$ perl ./geoip --fetch --DB=dbi:SQLite:dbname=geoip.db
+```
+or
+```
+$ export GEOIP_DBI_DSN=dbi:SQLite:dbname=/my/databases/geoip.db
+$ perl ./geoip --fetch
 ```
 
 Depending on the amount of memory you have, this might take a while.
