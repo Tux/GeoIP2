@@ -3,12 +3,17 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.04 - 20181126";
+our $VERSION = "0.05 - 20190131";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
     my $err = shift and select STDERR;
-    say "usage: $CMD [--fetch] [--no-update] ip|host ...";
+    say "usage: $CMD [--fetch] [--no-update] [--dist] ip|host ...";
+    say "   -f  --fetch      Fetch new ZIP sources";
+    say "       --no-update  Do not update the database on new data";
+    say "   -d  --dist       Show distance in KM between here and there";
+    say "                    will only work if LWP::UserAgent and";
+    say "                    HTML::TreeBuilder are installed";
     exit $err;
     } # usage
 
@@ -16,6 +21,7 @@ use DBI;
 use Socket;
 use Net::CIDR;
 #se Data::Peek;
+use Math::Trig;
 use LWP::Simple;
 use Archive::Zip;
 use Text::CSV_XS qw( csv );
@@ -26,6 +32,8 @@ GetOptions (
 
     "u|update!"		=> \(my $opt_u = 1),
     "f|fetch!"		=> \(my $opt_f = 0),
+    "d|dist!"		=> \(my $opt_d = 0),
+
     "v|verbose:1"	=> \(my $opt_v = 0),
     ) or usage (1);
 
@@ -457,6 +465,32 @@ while (@ARGV) {
     $stc->finish;
     }
 
+my $here;
+if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
+    my $ua = LWP::UserAgent->new (
+	max_redirect => 2,
+	agent        => "geoip/$VERSION",
+	parse_head   => 0,
+	timeout      => 10,
+	cookie_jar   => {},
+	);
+    $ua->env_proxy;
+    warn "Using GeoIP to determine own location\n";
+    my $url = "http://www.geoiptool.com";
+    my $rsp = $ua->request (HTTP::Request->new (GET => $url));
+    if ($rsp->is_success) {
+	my $tree = HTML::TreeBuilder->new ();
+	if ($tree->parse_content ($rsp->content)) {
+	    foreach my $e ($tree->look_down (_tag => "div", class => "data-item")) {
+		my $di = $e->as_text or next;
+		$di =~ m/^\s*(\S[^:]+?)\s*:\s*(.*?)\s*$/ and $here->{$1} = $2;
+		}
+	    }
+	}
+    $here->{Longitude} or $here = undef;
+    }
+use DP;DDumper $here;
+
 for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $a->{ip_n}      <=> $b->{ip_n}
 	  } values %found) {
@@ -477,6 +511,14 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	my $z = 16 - int log $acc;
 	say "               https://www.openstreetmap.org/#map=$z/$lat/$lon";
 	say "               https://www.google.com/maps/place/\@$lat,$lon,${z}z";
+
+	if ($here) {
+	    my ($llat, $llon) = ($here->{Latitude}, $here->{Longitude});
+	    say "   Localhost : $llat / $llon\t\t",
+		dec2dms ($llat), " / ", dec2dms ($llon);
+	    printf "   Distance  : \x{00b1} %.2fkm\n",
+		distance ($lat, $lon, $llat, $llon);
+	    }
 	}
     say "   Timezone  : ", $_->{city_tz} || "";
     say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
@@ -496,3 +538,18 @@ sub dec2dms {
     my $sec = ($dm - $min) * 60;
     sprintf "%d\x{00b0}%02d'%05.2f\"", $deg, $min, $sec;
     } # dec2dms
+
+sub distance {
+    my ($lat_c, $lon_c, $lat_s, $lon_s) = @_;
+    my $rad = 6371; # km
+
+    # Convert angles from degrees to radians
+    my $dlat = deg2rad ($lat_s - $lat_c);
+    my $dlon = deg2rad ($lon_s - $lon_c);
+
+    my $x = sin ($dlat / 2) * sin ($dlat / 2) +
+	    cos (deg2rad ($lat_c)) * cos (deg2rad ($lat_s)) *
+		sin ($dlon / 2) * sin ($dlon / 2);
+
+    return 6371 * 2 * atan2 (sqrt ($x), sqrt (1 - $x)); # km
+    } # distance
