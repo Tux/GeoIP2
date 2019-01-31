@@ -28,19 +28,41 @@ If you download all three, and create a postgres database `geoip`, then
 Once the database is filled, the last call might return something like
 
 ```
-GeoIP data for 66.39.54.27 - www.perlmonks.org:
+GeoIP data for 66.39.54.27 - www.perlmonks.com:
    CIDR      : 66.39.0.0/16
    IP range  : 66.39.0.0 - 66.39.255.255
    Provider  : pair Networks
    City      : Pittsburgh, 508, 15203
    Country   : US  United States
    Continent : North America
-   Location  : 40.4254 / -79.9799 (1000)        40°25'31.44" / -79°58'47.64"
+   Location  :   40.4254 /  -79.9799 (1000)   40°25'31.44" /  -79°58'47.64"
+               https://www.openstreetmap.org/#map=10/40.4254/-79.9799
                https://www.google.com/maps/place/@40.4254,-79.9799,10z
    Timezone  : America/New_York
-   EU member : NO
-   Satellite : NO
-   Anon Proxy: NO
+   EU member : No
+   Satellite : No
+   Anon Proxy: No
+```
+
+and, when you also use the `--dist` option
+```
+Using GeoIP to determine own location
+GeoIP data for 66.39.54.27 - www.perlmonks.com:
+   CIDR      : 66.39.0.0/16
+   IP range  : 66.39.0.0 - 66.39.255.255
+   Provider  : pair Networks
+   City      : Pittsburgh, 508, 15203
+   Country   : US  United States
+   Continent : North America
+   Location  :   40.4254 /  -79.9799 (1000)   40°25'31.44" /  -79°58'47.64"
+               https://www.openstreetmap.org/#map=10/40.4254/-79.9799
+               https://www.google.com/maps/place/@40.4254,-79.9799,10z
+   Location  :   52.3824 /    4.8995          52°22'56.64" /    4°53'58.20"
+   Distance  : ± 6258.19km
+   Timezone  : America/New_York
+   EU member : No
+   Satellite : No
+   Anon Proxy: No
 ```
 
 ## PREREQUISITES

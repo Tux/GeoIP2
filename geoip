@@ -512,8 +512,8 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
     say "   Country   : $_->{reg_ctry_iso}  $_->{reg_ctry_name}";
     say "   Continent : $_->{reg_continent}";
     if ($lat || $lon) {
-	say "   Location  : $lat / $lon ($acc)\t",
-	    dec2dms ($lat), " / ", dec2dms ($lon);
+	printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n", $lat, $lon,
+	    "($acc)", dec2dms ($lat), dec2dms ($lon);
 	# OSM max zoom = 19, Google Maps max zoom = 21
 	my $z = 16 - int log $acc;
 	say "               https://www.openstreetmap.org/#map=$z/$lat/$lon";
@@ -521,8 +521,8 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 
 	if ($here) {
 	    my ($llat, $llon) = ($here->{Latitude}, $here->{Longitude});
-	    say "   Localhost : $llat / $llon\t\t",
-		dec2dms ($llat), " / ", dec2dms ($llon);
+	    printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
+		$llat, $llon, "", dec2dms ($llat), dec2dms ($llon);
 	    printf "   Distance  : \x{00b1} %.2fkm\n",
 		distance ($lat, $lon, $llat, $llon);
 	    }
