@@ -1,0 +1,14 @@
+0.05	- 2019-01-31, H.Merijn Brand
+    * Add ChangeLog
+    * Add --dist option
+
+0.04	- 2018-11-26, H.Merijn Brand
+    * Initial release to github
+    * README updates
+    * Progress on DB loading
+    * Error handling on bad queries
+    * Off-line use (no DNS)
+    * Usage
+    * Add --fetch and --no-update
+    * Add OpenStreetMap URL
+    * No warnings on first fetch
