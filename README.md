@@ -51,6 +51,13 @@ GeoIP data for 66.39.54.27 - www.perlmonks.org:
 - [Text::CSV_XS](https://metacpan.org/release/Text-CSV_XS)-1.35
 - [Net::CIDR](https://metacpan.org/release/Net-CIDR)
 
+For use of the `--dist` option, two additional modules are required.
+This functionality is optional, `geoip` will work perfectly fine
+without these.
+
+- [LWP::UserAgent](https://metacpan.org/release/LWP-UserAgent)
+- [HTML::TreeBuilder](https://metacpan.org/release/HTML-TreeBuilder)
+
 ## INSTALLATION
 
 ```
@@ -95,7 +102,7 @@ and documentation mentioning features of or use of this database.
 This tool uses the GeoLite2 data created by MaxMind, available from
 [http://www.maxmind.com](http://www.maxmind.com).
 
-Copyright (c) 2018-2018 H.Merijn Brand.  All rights reserved.
+Copyright (c) 2018-2019 H.Merijn Brand.  All rights reserved.
 
 This tool is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
