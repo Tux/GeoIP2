@@ -518,7 +518,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
     say "   Country   : $_->{reg_ctry_iso}  $_->{reg_ctry_name}";
     say "   Continent : $_->{reg_continent}";
     say "   Timezone  : ", $_->{city_tz} || "";
-    $short and next;
+    $opt_s and next;
     if ($lat || $lon) {
 	printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n", $lat, $lon,
 	    "($acc)", dec2dms ($lat), dec2dms ($lon);
