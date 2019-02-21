@@ -1,3 +1,6 @@
+0.06	- 2019-02-21, H.Merijn Brand
+    * Add -s/--short
+
 0.05	- 2019-01-31, H.Merijn Brand
     * Add ChangeLog
     * Add --dist option
