@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.06 - 20190221";
+our $VERSION = "0.06 - 20190309";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -42,6 +42,10 @@ GetOptions (
     "v|verbose:1"	=> \(my $opt_v = 0),
     ) or usage (1);
 
+my $gis = eval {
+    require GIS::Distance;
+    GIS::Distance->new;
+    };
 
 my $dbh = DBI->connect ($dbi_dsn, undef, undef, {
     AutoCommit		=> 0,
@@ -555,6 +559,10 @@ sub dec2dms {
 
 sub distance {
     my ($lat_c, $lon_c, $lat_s, $lon_s) = @_;
+
+    $gis and
+	return $gis->distance ($lat_c, $lon_c, $lat_s, $lon_s)->meters / 1000.;
+
     my $rad = 6371; # km
 
     # Convert angles from degrees to radians
