@@ -117,6 +117,32 @@ $ wget -m -L -nd -np -nH \
 - Help / Manual
 - Options
 
+## SEE ALSO
+
+This tool uses the following modules from CORE and CPAN:
+
+- [Archive::Zip](https://metacpan.org/release/Archive-Zip)
+- [Data::Dumper](https://metacpan.org/release/Data-Dumper) (core)
+- [Data::Peek](https://metacpan.org/release/Data-Peek) (optional)
+- [Getopt::Long](https://metacpan.org/release/Getopt-Long) (core)
+- [GIS::Distance](https://metacpan.org/release/GIS-Distance) (optional)
+- [HTML::TreeBuilder](https://metacpan.org/release/HTML-TreeBuilder) (optional)
+- [LWP::Simple](https://metacpan.org/release/LWP-Simple)
+- [LWP::UserAgent](https://metacpan.org/release/LWP-UserAgent) (optional)
+- [Math::Trig](https://metacpan.org/release/Math-Complex) (core)
+- [Net::CIDR](https://metacpan.org/release/Net-CIDR)
+- [Socket](https://metacpan.org/release/Socket) (core)
+- [Text::CSV_XS](https://metacpan.org/release/Text-CSV_XS)
+
+Modules on CPAN with similar and related functionality:
+
+- [Geo::IP](https://metacpan.org/release/Geo-IP)
+- [Geo::IP2Proxy](https://metacpan.org/release/Geo-IP2Proxy)
+- [IP::World](https://metacpan.org/release/IP-World)
+- [Pcore::GeoIP](https://metacpan.org/release/Pcore-GeoIP)
+
+Check [CPAN](https://metacpan.org/search?q=geoip) for more
+
 ## THANKS
 
 Thanks to cavac for the inspiration
