@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.06 - 20190309";
+our $VERSION = "0.07 - 20190411";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -493,20 +493,37 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	);
     $ua->env_proxy;
     warn "Using GeoIP to determine own location\n";
-    my $url = "http://www.geoiptool.com";
-    my $rsp = $ua->request (HTTP::Request->new (GET => $url));
-    if ($rsp->is_success) {
-	my $tree = HTML::TreeBuilder->new ();
-	if ($tree->parse_content ($rsp->content)) {
-	    foreach my $e ($tree->look_down (_tag => "div", class => "data-item")) {
-		my $di = $e->as_text or next;
-		$di =~ m/^\s*(\S[^:]+?)\s*:\s*(.*?)\s*$/ and $here->{$1} = $2;
+    $here = {};
+    foreach my $url (qw(
+	    https://iplocation.com
+	    https://geoiptool.com
+	    http://www.geoiptool.com
+	    )) {
+	my $rsp = $ua->request (HTTP::Request->new (GET => $url));
+	if ($rsp->is_success) {
+	    $opt_v > 1 and say "$url: OK";
+	    my $tree = HTML::TreeBuilder->new ();
+	    if ($tree->parse_content ($rsp->content)) {
+		foreach my $e ($tree->look_down (_tag => "div", class => "data-item")) {
+		    my $di = $e->as_text or next;
+		    $di =~ m/^\s*(\S[^:]+?)\s*:\s*(.*?)\s*$/ and $here->{$1} //= $2;
+		    }
+		foreach my $e ($tree->look_down (_tag => "td", class => qr{^(?:lat|lng)$})) {
+		    my $di = $e->as_text or next;
+		    my $cl = $e->attr ("class");
+		    my $tg = $cl eq "lat" ? "Latitude" : "Longitude";
+		    $di =~ m/^\s*(-?\d+\.\d+)\s*$/ and $here->{$tg} //= $1;
+		    }
 		}
 	    }
+	elsif ($opt_v) {
+	    warn sprintf "%-25s : %s\n", $url, $rsp->status_line;
+	    }
+	defined $here->{Longitude} and last;
 	}
-    $here->{Longitude} or $here = undef;
+    defined $here->{Longitude} or $here = undef;
+    #DDumper $here;
     }
-#DDumper $here;
 
 for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $a->{ip_n}      <=> $b->{ip_n}

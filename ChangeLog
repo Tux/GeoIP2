@@ -1,6 +1,7 @@
-0.06	- 2019-03-09, H.Merijn Brand
+0.06	- 2019-04-11, H.Merijn Brand
     * Add -s/--short
     * Use GIS::Distance if available
+    * Add alternative geolocation url
 
 0.05	- 2019-01-31, H.Merijn Brand
     * Add ChangeLog
