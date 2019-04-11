@@ -505,6 +505,13 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
     $ua->env_proxy;
     warn "Using GeoIP to determine own location\n";
     $here = {};
+    my %cls = (
+	lat	=> "Latitude",
+	lng	=> "Longitude",
+	ip	=> "IP",
+	city	=> "City",
+	company	=> "Provider",
+	);
     foreach my $url (qw(
 	    https://iplocation.com
 	    https://geoiptool.com
@@ -519,11 +526,11 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 		    my $di = $e->as_text or next;
 		    $di =~ m/^\s*(\S[^:]+?)\s*:\s*(.*?)\s*$/ and $here->{$1} //= $2;
 		    }
-		foreach my $e ($tree->look_down (_tag => "td", class => qr{^(?:lat|lng)$})) {
-		    my $di = $e->as_text or next;
-		    my $cl = $e->attr ("class");
-		    my $tg = $cl eq "lat" ? "Latitude" : "Longitude";
-		    $di =~ m/^\s*(-?\d+\.\d+)\s*$/ and $here->{$tg} //= $1;
+		foreach my $e ($tree->look_down (_tag => "td",
+				class => qr{^(?:lat|lng|ip|city|company)$})) {
+		    my $di = $e->as_text =~ s/^\s+//r =~ s/\s+$//r or next;
+		    my $cl = $cls{$e->attr ("class")} or next;
+		    $here->{$cl} //= $di;
 		    }
 		}
 	    }
