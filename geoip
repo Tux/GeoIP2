@@ -21,7 +21,7 @@ sub usage {
 use DBI;
 use Socket;
 use Net::CIDR;
-#se Data::Peek;
+use Data::Dumper;
 use Math::Trig;
 use LWP::Simple;
 use Archive::Zip;
@@ -46,6 +46,10 @@ my $gis = eval {
     require GIS::Distance;
     GIS::Distance->new;
     };
+my $use_data_peek = eval {
+    require Data::Peek;
+    1;
+    };
 
 my $dbh = DBI->connect ($dbi_dsn, undef, undef, {
     AutoCommit		=> 0,
@@ -53,6 +57,13 @@ my $dbh = DBI->connect ($dbi_dsn, undef, undef, {
     PrintError		=> 1,
     ShowErrorStatement	=> 1,
     });
+
+sub _dump {
+    my ($label, $ref) = @_;
+    print STDERR $use_data_peek
+	? Data::Peek::DDumper ({ $label => $ref })
+	: Data::Dumper->Dump ([$ref], [$label]);
+    } # _dump
 
 # Based on GeoIP2 CSV databases
 #  City:   http://geolite.maxmind.com/download/geoip/database/GeoLite2-City-CSV.zip
@@ -522,13 +533,13 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	defined $here->{Longitude} and last;
 	}
     defined $here->{Longitude} or $here = undef;
-    #DDumper $here;
+    $opt_v > 4 and _dump ("Here", $here);
     }
 
 for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $a->{ip_n}      <=> $b->{ip_n}
 	  } values %found) {
-    #DDumper $_;
+    $opt_v > 6 and _dump ("Processing", $_);
     my ($lat, $lon, $acc) = ($_->{latitude}, $_->{longitude}, $_->{accuracy});
     say "GeoIP data for $_->{ip} - $_->{hostname}:";
     say "   CIDR      : $_->{cidr}";
