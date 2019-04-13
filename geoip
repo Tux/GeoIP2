@@ -512,11 +512,14 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	city	=> "City",
 	company	=> "Provider",
 	);
-    foreach my $url (qw(
-	    https://iplocation.com
-	    https://geoiptool.com
-	    http://www.geoiptool.com
-	    )) {
+    foreach my $url (
+	    "https://iplocation.com",
+	    # https://tools.tracemyip.org - only returns IP, no coordinates
+	    # <div class="tsTxt14 txtBld"><span class="txtBld tsTxt14 sModPrW"><a href="/lookup/1.2.3.4">1.2.3.4</a></span></div>
+	    # of course I can use my own DB to find the coordinates
+	    "https://geoiptool.com",
+	    "http://www.geoiptool.com",
+	    ) {
 	my $rsp = $ua->request (HTTP::Request->new (GET => $url));
 	if ($rsp->is_success) {
 	    $opt_v > 1 and say "$url: OK";

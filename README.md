@@ -134,12 +134,22 @@ This tool uses the following modules from CORE and CPAN:
 - [Socket](https://metacpan.org/release/Socket) (core)
 - [Text::CSV_XS](https://metacpan.org/release/Text-CSV_XS)
 
-Modules on CPAN with similar and related functionality:
+Modules on CPAN with similar and/or related functionality:
 
-- [Geo::IP](https://metacpan.org/release/Geo-IP)
+- [Geo::Coder::HostIP](https://metacpan.org/release/Geo-Coder-HostIP)
+- [Geo::IP](https://metacpan.org/release/Geo-IP) - from maxmind
+- [Geo::IP2Location](https://metacpan.org/release/Geo-IP2Location)
 - [Geo::IP2Proxy](https://metacpan.org/release/Geo-IP2Proxy)
+- [Geo::IPfree](https://metacpan.org/release/Geo-IPfree) - using [software77](http://software77.net/geo-ip/) database
+- [Geo::IP::RU::IpGeoBase](https://metacpan.org/release/Geo-IP-RU-IpGeoBase)
+- [IP::Country](https://metacpan.org/release/IP-Country)
+- [IP::Country::DB_File](https://metacpan.org/release/IP-Country-DB_File)
+- [IP::Country::DNSBL](https://metacpan.org/release/IP-Country-DNSBL)
 - [IP::Info](https://metacpan.org/release/IP-Info)
+- [IP::Location](https://metacpan.org/release/IP-Location)
+- [IP::QQWry](https://metacpan.org/release/IP-QQWry)
 - [IP::World](https://metacpan.org/release/IP-World)
+- [Metabrik::Lookup::Iplocation](https://metacpan.org/release/Metabrik-Lookup-Iplocation)
 - [Pcore::GeoIP](https://metacpan.org/release/Pcore-GeoIP)
 
 Check [CPAN](https://metacpan.org/search?q=geoip) for more
