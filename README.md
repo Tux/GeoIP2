@@ -138,6 +138,7 @@ Modules on CPAN with similar and related functionality:
 
 - [Geo::IP](https://metacpan.org/release/Geo-IP)
 - [Geo::IP2Proxy](https://metacpan.org/release/Geo-IP2Proxy)
+- [IP::Info](https://metacpan.org/release/IP-Info)
 - [IP::World](https://metacpan.org/release/IP-World)
 - [Pcore::GeoIP](https://metacpan.org/release/Pcore-GeoIP)
 
