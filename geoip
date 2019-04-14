@@ -461,7 +461,7 @@ while (@ARGV) {
 	$i->{provider} = $prov;
 	$i->{ip}       = $ip;
 	$i->{ip_n}     = $in;
-	$i->{hostname} = $host // "hostname not found";
+	$i->{hostname} = $host // "(hostname not found)";
 	foreach my $tp ("reg", "rep") {
 	    if (my $cid = delete $i->{"${tp}_country_id"}) {
 		$stc->execute ($cid);
