@@ -512,14 +512,7 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	city	=> "City",
 	company	=> "Provider",
 	);
-    foreach my $url (
-	    "https://iplocation.com",
-	    # https://tools.tracemyip.org - only returns IP, no coordinates
-	    # <div class="tsTxt14 txtBld"><span class="txtBld tsTxt14 sModPrW"><a href="/lookup/1.2.3.4">1.2.3.4</a></span></div>
-	    # of course I can use my own DB to find the coordinates
-	    "https://geoiptool.com",
-	    "http://www.geoiptool.com",
-	    ) {
+    foreach my $url (qw( https://iplocation.com https://geoiptool.com )) {
 	my $rsp = $ua->request (HTTP::Request->new (GET => $url));
 	if ($rsp->is_success) {
 	    $opt_v > 1 and say "$url: OK";
@@ -541,6 +534,12 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 	    warn sprintf "%-25s : %s\n", $url, $rsp->status_line;
 	    }
 	defined $here->{Longitude} and last;
+	}
+    unless (exists $here->{Longitude}) {
+	# If I did not get info, use the database:
+	# 1: dig -4 a +short myip.opendns.com @resolver1.opendns.com
+	# 2: https://tools.tracemyip.org - only returns IP, no coordinates
+	#    <div class="tsTxt14 txtBld"><span class="txtBld tsTxt14 sModPrW"><a href="/lookup/1.2.3.4">1.2.3.4</a></span></div>
 	}
     defined $here->{Longitude} or $here = undef;
     $opt_v > 4 and _dump ("Here", $here);
