@@ -3,18 +3,22 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.07 - 20190411";
+our $VERSION = "0.08 - 20190729";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
     my $err = shift and select STDERR;
-    say "usage: $CMD [--fetch] [--no-update] [--dist] ip|host ...";
+    say "usage: $CMD [--fetch] [--no-update] [--dist] [--whois] ip|host ...";
     say "   -f  --fetch      Fetch new ZIP sources";
     say "       --no-update  Do not update the database on new data";
     say "   -s  --short      Skip location and flags";
     say "   -d  --dist       Show distance in KM between here and there";
     say "                    will only work if LWP::UserAgent and";
     say "                    HTML::TreeBuilder are installed";
+    say "   -w  --whois      Show whois information";
+    say "                    will only work if Net::Whois::IP is installed";
+    say "   -D  --DB=dsn     Specify geoip database DSN default: dbi:Pg:geoip";
+    say "                    may be specified in \$GEOIP_DBI_DSN";
     exit $err;
     } # usage
 
@@ -34,6 +38,7 @@ GetOptions (
     "u|update!"		=> \(my $opt_u = 1),
     "f|fetch!"		=> \(my $opt_f = 0),
     "d|dist!"		=> \(my $opt_d = 0),
+    "w|whois!"		=> \(my $opt_w = 0),
     "s|short!"		=> \(my $opt_s = 0),
 
     "D|DB=s"		=> \(my $dbi_dsn = $ENV{GEOIP_DBI_DSN}
@@ -49,6 +54,10 @@ my $gis = eval {
 my $use_data_peek = eval {
     require Data::Peek;
     1;
+    };
+my $whois = eval {
+    require Net::Whois::IP;
+    \&Net::Whois::IP::whoisip_query;
     };
 
 my $dbh = DBI->connect ($dbi_dsn, undef, undef, {
@@ -575,6 +584,23 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    printf "   Distance  : \x{00b1} %.2fkm\n",
 		distance ($lat, $lon, $llat, $llon);
 	    }
+	}
+    if ($opt_w && $whois and my $wi = $whois->($_->{ip})) {
+	my $address = join " " => grep { length } map { $wi->{$_} } qw(
+	    Address PostalCode StateProv Country address );
+	my %w = (
+	    ID      => $wi->{OrgId}         || $wi->{"admin-c"},
+	    Name    => $wi->{OrgNOCName}    || $wi->{OrgName}      || $wi->{descr},
+	    Phone   => $wi->{OrgNOCPhone}   || $wi->{OrgTechPhone} || $wi->{phone},
+	    EMail   => $wi->{OrgTechEmail}  || $wi->{OrgNOCEmail}  || $wi->{"e-mail"},
+	    Abuse   => $wi->{OrgAbuseEmail} || $wi->{"abuse-mailbox"},
+	    Address => $address,
+	    );
+
+	use DP;$opt_v > 8 and DDumper { wi => $wi, w => \%w };
+	my @wi = map { sprintf "     %-7s : %s", $_, $w{$_} }
+	         grep { length $w{$_} } qw( Name ID Phone EMail Abuse Address );
+	@wi and say for "   Whois information:", @wi;
 	}
     say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
     say "   Satellite : ", $_->{satellite}   ? "Yes" : "No";
