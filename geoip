@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.08 - 20190729";
+our $VERSION = "0.09 - 20190810";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -17,6 +17,7 @@ sub usage {
     say "                    HTML::TreeBuilder are installed";
     say "   -w  --whois      Show whois information";
     say "                    will only work if Net::Whois::IP is installed";
+    say "   -j  --json       Output information in JSON";
     say "   -D  --DB=dsn     Specify geoip database DSN default: dbi:Pg:geoip";
     say "                    may be specified in \$GEOIP_DBI_DSN";
     exit $err;
@@ -30,6 +31,7 @@ use Math::Trig;
 use LWP::Simple;
 use Archive::Zip;
 use Text::CSV_XS qw( csv );
+use JSON::PP;
 use Getopt::Long qw(:config bundling);
 GetOptions (
     "help|?"		=> sub { usage (0); },
@@ -40,6 +42,7 @@ GetOptions (
     "d|dist!"		=> \(my $opt_d = 0),
     "w|whois!"		=> \(my $opt_w = 0),
     "s|short!"		=> \(my $opt_s = 0),
+    "j|json!"		=> \(my $opt_j = 0),
 
     "D|DB=s"		=> \(my $dbi_dsn = $ENV{GEOIP_DBI_DSN}
 					|| "dbi:Pg:dbname=geoip"),
@@ -184,9 +187,9 @@ if ($opt_f) {
 			GeoLite2-Country-CSV.zip
 			GeoLite2-City-CSV.zip
 			)) {
-	printf     "%34s %s\n",     dtsz ($f), $f;
+	printf STDERR     "%34s %s\n",     dtsz ($f), $f;
 	my $c = mirror ("$base/$f", $f);
-	printf "%4d %29s %s\n", $c, dtsz ($f), $f;
+	printf STDERR "%4d %29s %s\n", $c, dtsz ($f), $f;
 	}
     }
 
@@ -540,7 +543,7 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
 		}
 	    }
 	elsif ($opt_v) {
-	    warn sprintf "%-25s : %s\n", $url, $rsp->status_line;
+	    printf STDERR "%-25s : %s\n", $url, $rsp->status_line;
 	    }
 	defined $here->{Longitude} and last;
 	}
@@ -554,38 +557,55 @@ if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
     $opt_v > 4 and _dump ("Here", $here);
     }
 
+my @json;
 for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $a->{ip_n}      <=> $b->{ip_n}
 	  } values %found) {
     $opt_v > 6 and _dump ("Processing", $_);
     my ($lat, $lon, $acc) = ($_->{latitude}, $_->{longitude}, $_->{accuracy});
-    say "GeoIP data for $_->{ip} - $_->{hostname}:";
-    say "   CIDR      : $_->{cidr}";
-    say "   IP range  : $_->{ip_from} - $_->{ip_to}";
-    say "   Provider  : $_->{provider}";
-    say "   City      : ", join ", " => grep m/\S/ => map { $_ || "" }
+    $_->{city} = join ", " => grep m/\S/ => map { $_ || "" }
 	$_->{city_name}, $_->{city_metro_code}, $_->{postal_code};
-    say "   Country   : $_->{reg_ctry_iso}  $_->{reg_ctry_name}";
-    say "   Continent : $_->{reg_continent}";
-    say "   Timezone  : ", $_->{city_tz} || "";
-    $opt_s and next;
-    if ($lat || $lon) {
-	printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n", $lat, $lon,
-	    "($acc)", dec2dms ($lat), dec2dms ($lon);
+    $_->{city_tz} ||= "";
+    my %json = %$_;
+
+    unless ($opt_j) {
+	say "GeoIP data for $_->{ip} - $_->{hostname}:";
+	say "   CIDR      : $_->{cidr}";
+	say "   IP range  : $_->{ip_from} - $_->{ip_to}";
+	say "   Provider  : $_->{provider}";
+	say "   City      : $_->{city}";
+	say "   Country   : $_->{reg_ctry_iso}  $_->{reg_ctry_name}";
+	say "   Continent : $_->{reg_continent}";
+	say "   Timezone  : $_->{city_tz}";
+	}
+
+    if (!$opt_s && ($lat || $lon)) {
+	my ($lat_dms, $lon_dms) = map { dec2dms ($_) } $lat, $lon;
+	@json{qw( latitude_dms longitude_dms )} = ($lat_dms, $lon_dms);
+	$opt_j or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
+	    $lat, $lon, "($acc)", $lat_dms, $lon_dms;
 	# OSM max zoom = 19, Google Maps max zoom = 21
 	my $z = 16 - int log $acc;
-	say "               https://www.openstreetmap.org/#map=$z/$lat/$lon";
-	say "               https://www.google.com/maps/place/\@$lat,$lon,${z}z";
+	my @map = (
+	    "https://www.openstreetmap.org/#map=$z/$lat/$lon",
+	    "https://www.google.com/maps/place/\@$lat,$lon,${z}z",
+	    );
+	$json{map_urls} = \@map;
+	$opt_j or say "               $_" for @map;
 
 	if ($here) {
 	    my ($llat, $llon) = ($here->{Latitude}, $here->{Longitude});
-	    printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
-		$llat, $llon, "", dec2dms ($llat), dec2dms ($llon);
-	    printf "   Distance  : \x{00b1} %.2fkm\n",
-		distance ($lat, $lon, $llat, $llon);
+	    my ($llat_dms, $llon_dms) = map { dec2dms ($_) } $llat, $llon;
+	    my $dist = distance ($lat, $lon, $llat, $llon);
+	    @json{qw( local_latitude local_longitude
+		      local_latidue_dms local_longitude_dms distance )} =
+		($llat, $llon, $llat_dms, $llon_dms, $dist);
+	    $opt_j or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
+		$llat, $llon, "", $llat_dms, $llon_dms;
+	    $opt_j or printf "   Distance  : \x{00b1} %.2fkm\n", $dist;
 	    }
 	}
-    if ($opt_w && $whois and my $wi = $whois->($_->{ip})) {
+    if (!$opt_s && $opt_w && $whois and my $wi = $whois->($_->{ip})) {
 	my $address = join " " => grep { length } map { $wi->{$_} } qw(
 	    Address PostalCode StateProv Country address );
 	my %w = (
@@ -600,15 +620,23 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	use DP;$opt_v > 8 and DDumper { wi => $wi, w => \%w };
 	my @wi = map { sprintf "     %-7s : %s", $_, $w{$_} }
 	         grep { length $w{$_} } qw( Name ID Phone EMail Abuse Address );
-	@wi and say for "   Whois information:", @wi;
+	$json{whois} = \%w;
+	!$opt_j && @wi and say for "   Whois information:", @wi;
 	}
-    say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
-    say "   Satellite : ", $_->{satellite}   ? "Yes" : "No";
-    say "   Anon Proxy: ", $_->{anon_proxy}  ? "Yes" : "No";
+    if ($opt_j) {
+	push @json, \%json;
+	}
+    elsif (!$opt_s) {
+	say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
+	say "   Satellite : ", $_->{satellite}   ? "Yes" : "No";
+	say "   Anon Proxy: ", $_->{anon_proxy}  ? "Yes" : "No";
+	}
     }
 
 $dbh->rollback;
 $dbh->disconnect;
+
+$opt_j and say JSON::PP->new->ascii->pretty->allow_nonref->encode (\@json);
 
 sub dec2dms {
     my $dec = shift or return "";
