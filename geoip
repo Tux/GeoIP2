@@ -3,23 +3,24 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.09 - 20190810";
+our $VERSION = "0.09 - 20190811";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
     my $err = shift and select STDERR;
     say "usage: $CMD [--fetch] [--no-update] [--dist] [--whois] ip|host ...";
-    say "   -f  --fetch      Fetch new ZIP sources";
-    say "       --no-update  Do not update the database on new data";
-    say "   -s  --short      Skip location and flags";
-    say "   -d  --dist       Show distance in KM between here and there";
-    say "                    will only work if LWP::UserAgent and";
-    say "                    HTML::TreeBuilder are installed";
-    say "   -w  --whois      Show whois information";
-    say "                    will only work if Net::Whois::IP is installed";
-    say "   -j  --json       Output information in JSON";
-    say "   -D  --DB=dsn     Specify geoip database DSN default: dbi:Pg:geoip";
-    say "                    may be specified in \$GEOIP_DBI_DSN";
+    say "   -f  --fetch        Fetch new ZIP sources";
+    say "       --no-update    Do not update the database on new data";
+    say "   -s  --short        Skip location and flags";
+    say "   -d  --dist         Show distance in KM between here and there";
+    say "                      will only work if LWP::UserAgent and";
+    say "                      HTML::TreeBuilder are installed";
+    say "   -w  --whois        Show whois information";
+    say "                      will only work if Net::Whois::IP is installed";
+    say "   -j  --json         Output information in JSON";
+    say "   -J  --json-pretty  Output information in JSON";
+    say "   -D  --DB=dsn       Specify geoip database DSN default: dbi:Pg:geoip";
+    say "                      may be specified in \$GEOIP_DBI_DSN";
     exit $err;
     } # usage
 
@@ -38,17 +39,20 @@ GetOptions (
     "V|version"		=> sub { say "$CMD [$VERSION]"; exit 0; },
 
     "u|update!"		=> \(my $opt_u = 1),
-    "f|fetch!"		=> \(my $opt_f = 0),
-    "d|dist!"		=> \(my $opt_d = 0),
-    "w|whois!"		=> \(my $opt_w = 0),
-    "s|short!"		=> \(my $opt_s = 0),
-    "j|json!"		=> \(my $opt_j = 0),
+    "f|fetch!"		=> \ my $opt_f,
+    "d|dist!"		=> \ my $opt_d,
+    "w|whois!"		=> \ my $opt_w,
+    "s|short!"		=> \ my $opt_s,
+    "j|json!"		=> \ my $opt_j,
+    "J|json-pretty!"	=> \ my $opt_J,
 
     "D|DB=s"		=> \(my $dbi_dsn = $ENV{GEOIP_DBI_DSN}
 					|| "dbi:Pg:dbname=geoip"),
 
     "v|verbose:1"	=> \(my $opt_v = 0),
     ) or usage (1);
+
+$opt_J and $opt_j++;
 
 my $gis = eval {
     require GIS::Distance;
@@ -636,7 +640,11 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 $dbh->rollback;
 $dbh->disconnect;
 
-$opt_j and say JSON::PP->new->ascii->pretty->allow_nonref->encode (\@json);
+if ($opt_j) {
+    say $opt_J
+	? JSON::PP->new->pretty->allow_nonref->encode (\@json)
+	: JSON::PP->new->ascii ->allow_nonref->encode (\@json);
+    }
 
 sub dec2dms {
     my $dec = shift or return "";
