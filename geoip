@@ -730,7 +730,7 @@ __END__
 
 =head1 NAME
 
-geoip - a tool to show geological data ased on hostname or IP address(es)
+geoip - a tool to show geological data based on hostname or IP address(es)
 
 =head1 SYNOPSIS
 
@@ -742,9 +742,9 @@ geoip - a tool to show geological data ased on hostname or IP address(es)
 
 =head1 DESCRIPTION
 
-This tool uses a database to use the (prefetched) GeoIP2 data from MaxMind
+This tool uses a database to use the (pre-fetched) GeoIP2 data from MaxMind
 to show related geographical information for IP addresses. This information
-can optionally be extended with ninformation from online WHOIS services and
+can optionally be extended with information from online WHOIS services and
 or derived data, like distance to the location of the server this tool runs
 on or a configured local location.
 
@@ -752,7 +752,7 @@ The output is plain text or JSON. JSON may be short or formatted.
 
 =head2 Configuration
 
-The tool allows the use of configurtion files. It tests for existence of
+The tool allows the use of configuration files. It tests for existence of
 the files listed here. All existing files is read (in this order) if it is
 not world writable:
 
@@ -769,7 +769,7 @@ The format of the file is
 
 where the C<:> and C<=> are equal and whitespace around them is optional
 and ignored. The values C<False> and C<No> (case insensitive) are the same
-as C<0> and the values C<True> and C<Yes> are equal to C<1>. For readibility
+as C<0> and the values C<True> and C<Yes> are equal to C<1>. For readability
 you can prefix C<use_> to most options (it is ignored). The use of C<-> in
 option names is allowed and will be translated to C<_>.
 
@@ -783,7 +783,7 @@ command line option : C<-f> or C<--fetch>
 
 default value       : False
 
-Fetch new databases from the maxmind site.
+Fetch new databases from the MaxMind site.
 
 =item update
 
@@ -830,7 +830,7 @@ command line option : C<-s> or C<--short>
 default value       : False
 
 This option will disable the output of less-informative information like
-location, EU-membership, satelite and proxy. This option, if True, will also 
+location, EU-membership, satellite and proxy. This option, if True, will also 
 implicitly disable the C<distance> and C<whois> information.
 
 =item dsn
@@ -840,7 +840,7 @@ command line option : C<-Ddsn> or C<--DB=dsn>
 default value       : C<$ENV{EOIP_DBI_DSN}> or C<dbi:Pg:geoip>
 
 Set the database to use. Currently PostgreSQL and SQLite have been tested.
-Other DNS's might work. YMMV.
+Other DSN's might work. YMMV.
 
 If the connection works, the tables used by this tool will be created if
 not yet present.
@@ -859,7 +859,7 @@ command line option : C<-j> or C<--json>
 default value       : False
 
 The default output for the information is plain text. With this option,
-the output will be in JSON format. The default is not pretty-fied.
+the output will be in JSON format. The default is not prettified.
 
 =item json-pretty
 
@@ -883,7 +883,7 @@ When running the tool from a different location than where the IP access is
 to be analyzed for or when the network connection will not report a location
 that would make sense (like working from a cloud or running over one or more
 VPN connections), one can set the location of the base in decimal notation.
-(DMS notation is not yet supported).
+(degree-minute-second-notation is not yet supported).
 
 This is also useful when there is no outbound connection possible or when you
 do not move location and you want to restrict network requests.
