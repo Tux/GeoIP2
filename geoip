@@ -34,16 +34,19 @@ use Archive::Zip;
 use Text::CSV_XS qw( csv );
 use JSON::PP;
 use Getopt::Long qw(:config bundling);
+
+my %conf = getconf ();
+
 GetOptions (
     "help|?"		=> sub { usage (0); },
     "V|version"		=> sub { say "$CMD [$VERSION]"; exit 0; },
 
-    "u|update!"		=> \(my $opt_u = 1),
-    "f|fetch!"		=> \ my $opt_f,
-    "d|dist!"		=> \ my $opt_d,
-    "w|whois!"		=> \ my $opt_w,
-    "s|short!"		=> \ my $opt_s,
-    "j|json!"		=> \ my $opt_j,
+    "u|update!"		=> \$conf{update},
+    "f|fetch!"		=> \$conf{fetch},
+    "d|dist|distance!"	=> \$conf{distance},
+    "w|whois!"		=> \$conf{whois},
+    "s|short!"		=> \$conf{short},
+    "j|json!"		=> \$conf{json},
     "J|json-pretty!"	=> \ my $opt_J,
 
     "D|DB=s"		=> \(my $dbi_dsn = $ENV{GEOIP_DBI_DSN}
@@ -52,7 +55,13 @@ GetOptions (
     "v|verbose:1"	=> \(my $opt_v = 0),
     ) or usage (1);
 
-$opt_J and $opt_j++;
+if ($opt_J) {
+    $conf{json_pretty}++;
+    $conf{json}++;
+    }
+if ($conf{json}) {
+    $opt_J = $conf{json_pretty};
+    }
 
 my $gis = eval {
     require GIS::Distance;
@@ -66,6 +75,39 @@ my $whois = eval {
     require Net::Whois::IP;
     \&Net::Whois::IP::whoisip_query;
     };
+
+sub getconf {
+    my %c = (
+	update		=> 1,
+	distance	=> 0,
+	whois		=> 0,
+	short		=> 0,
+	json		=> 0,
+	json_pretty	=> 0,
+	location	=> undef,
+	);
+    my $home = $ENV{HOME} || $ENV{USERPROFILE} || $ENV{HOMEPATH};
+    foreach my $rcf (grep { -s }
+            "$home/geoip.rc", "$home/.geoiprc", "$home/.config/geoip") {
+        my $mode = (stat $rcf)[2];
+        $mode & 022 and next;
+        open my $fh, "<", $rcf or next;
+        while (<$fh>) {
+            m/^\s*[;#]/ and next;
+            my ($k, $v) = (m/^\s*([-\w]+)\s*[:=]\s*(.*\S)/) or next;
+            $c{ lc $k
+                =~ s{-}{_}gr
+                =~ s{^use_}{}ir
+                =~ s{^(json_)?(?:unicode|utf-?8?)$}{utf8}ir
+                =~ s{^dist$}{distance}ir
+              } = $v
+                =~ s{(?:U\+?|\\[Uu])([0-9A-Fa-f]{2,7})}{chr hex $1}ger
+                =~ s{^(?:no|false)$}{0}ir
+                =~ s{^(?:yes|true)$}{1}ir;
+            }
+	}
+    %c;
+    } # getconf
 
 my $dbh = DBI->connect ($dbi_dsn, undef, undef, {
     AutoCommit		=> 0,
@@ -185,7 +227,7 @@ sub dtsz {
 	$d[5] + 1900, ++$d[4], @d[3,2,1,0], $s[7];
     } # dtsz
 
-if ($opt_f) {
+if ($conf{fetch}) {
     my $base = "http://geolite.maxmind.com/download/geoip/database";
     foreach my $f (qw(	GeoLite2-ASN-CSV.zip
 			GeoLite2-Country-CSV.zip
@@ -198,7 +240,7 @@ if ($opt_f) {
     }
 
 my $zcfn = "GeoLite2-Country-CSV.zip";
-if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($conf{update} && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
@@ -292,7 +334,7 @@ else {
     }
 
 $zcfn = "GeoLite2-ASN-CSV.zip";
-if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($conf{update} && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
@@ -338,7 +380,7 @@ if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     }
 
 $zcfn = "GeoLite2-City-CSV.zip";
-if ($opt_u && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
+if ($conf{update} && -s $zcfn and ($stmp{$zcfn} // -1) < (stat $zcfn)[9]) {
     my $zip = Archive::Zip->new;
     $zip->read ($zcfn)		and die "Cannot unzip $zcfn\n";
     my @cmn = $zip->memberNames	or  die "$zcfn hasd no members\n";
@@ -510,7 +552,7 @@ while (@ARGV) {
     }
 
 my $here;
-if ($opt_d and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
+if ($conf{distance} and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
     my $ua = LWP::UserAgent->new (
 	max_redirect => 2,
 	agent        => "geoip/$VERSION",
@@ -572,7 +614,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
     $_->{city_tz} ||= "";
     my %json = %$_;
 
-    unless ($opt_j) {
+    unless ($conf{json}) {
 	say "GeoIP data for $_->{ip} - $_->{hostname}:";
 	say "   CIDR      : $_->{cidr}";
 	say "   IP range  : $_->{ip_from} - $_->{ip_to}";
@@ -583,10 +625,10 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	say "   Timezone  : $_->{city_tz}";
 	}
 
-    if (!$opt_s && ($lat || $lon)) {
+    if (!$conf{short} && ($lat || $lon)) {
 	my ($lat_dms, $lon_dms) = map { dec2dms ($_) } $lat, $lon;
 	@json{qw( latitude_dms longitude_dms )} = ($lat_dms, $lon_dms);
-	$opt_j or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
+	$conf{json} or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
 	    $lat, $lon, "($acc)", $lat_dms, $lon_dms;
 	# OSM max zoom = 19, Google Maps max zoom = 21
 	my $z = 16 - int log $acc;
@@ -595,7 +637,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    "https://www.google.com/maps/place/\@$lat,$lon,${z}z",
 	    );
 	$json{map_urls} = \@map;
-	$opt_j or say "               $_" for @map;
+	$conf{json} or say "               $_" for @map;
 
 	if ($here) {
 	    my ($llat, $llon) = ($here->{Latitude}, $here->{Longitude});
@@ -604,12 +646,12 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    @json{qw( local_latitude local_longitude
 		      local_latidue_dms local_longitude_dms distance )} =
 		($llat, $llon, $llat_dms, $llon_dms, $dist);
-	    $opt_j or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
+	    $conf{json} or printf "   Location  : %9.4f / %9.4f %-6s %14s / %14s\n",
 		$llat, $llon, "", $llat_dms, $llon_dms;
-	    $opt_j or printf "   Distance  : \x{00b1} %.2fkm\n", $dist;
+	    $conf{json} or printf "   Distance  : \x{00b1} %.2fkm\n", $dist;
 	    }
 	}
-    if (!$opt_s && $opt_w && $whois and my $wi = $whois->($_->{ip})) {
+    if (!$conf{short} && $conf{whois} && $whois and my $wi = $whois->($_->{ip})) {
 	my $address = join " " => grep { length } map { $wi->{$_} } qw(
 	    Address PostalCode StateProv Country address );
 	my %w = (
@@ -625,12 +667,12 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	my @wi = map { sprintf "     %-7s : %s", $_, $w{$_} }
 	         grep { length $w{$_} } qw( Name ID Phone EMail Abuse Address );
 	$json{whois} = \%w;
-	!$opt_j && @wi and say for "   Whois information:", @wi;
+	!$conf{json} && @wi and say for "   Whois information:", @wi;
 	}
-    if ($opt_j) {
+    if ($conf{json}) {
 	push @json, \%json;
 	}
-    elsif (!$opt_s) {
+    elsif (!$conf{short}) {
 	say "   EU member : ", $_->{reg_ctry_eu} ? "Yes" : "No";
 	say "   Satellite : ", $_->{satellite}   ? "Yes" : "No";
 	say "   Anon Proxy: ", $_->{anon_proxy}  ? "Yes" : "No";
@@ -640,7 +682,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 $dbh->rollback;
 $dbh->disconnect;
 
-if ($opt_j) {
+if ($conf{json}) {
     say $opt_J
 	? JSON::PP->new->pretty->allow_nonref->encode (\@json)
 	: JSON::PP->new->ascii ->allow_nonref->encode (\@json);
