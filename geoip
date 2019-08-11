@@ -724,3 +724,196 @@ sub getconf {
 	}
     } # getconf
 
+__END__
+
+=head1 NAME
+
+geoip - a tool to show geological data ased on hostname or IP address(es)
+
+=head1 SYNOPSIS
+
+ geoip --help
+
+ geoip --fetch [--no-update]
+
+ geoip [options] host|IP ...
+
+=head1 DESCRIPTION
+
+This tool uses a database to use the (prefetched) GeoIP2 data from MaxMind
+to show related geographical information for IP addresses. This information
+can optionally be extended with ninformation from online WHOIS services and
+or derived data, like distance to the location of the server this tool runs
+on or a configured local location.
+
+The output is plain text or JSON. JSON may be short or formatted.
+
+=head2 Configuration
+
+The tool allows the use of configurtion files. It tests for existence of
+the files listed here. All existing files is read (in this order) if it is
+not world writable:
+
+   $home/geoip.rc
+   $home/.geoiprc
+   $home/.config/geoip
+
+The format of the file is
+
+  # Comment
+  ; Comment
+  option : value
+  option = value
+
+where the C<:> and C<=> are equal and whitespace around them is optional
+and ignored. The values C<False> and C<No> (case insensitive) are the same
+as C<0> and the values C<True> and C<Yes> are equal to C<1>. For readibility
+you can prefix C<use_> to most options (it is ignored). The use of C<-> in
+option names is allowed and will be translated to C<_>.
+
+The recognized options and the command line equivalences are
+
+=over 2
+
+=item fetch
+
+command line option : C<-f> or C<--fetch>
+
+default value       : False
+
+Fetch new databases from the maxmind site.
+
+=item update
+
+command line option : C<-u> or C<--update>
+
+default value       : True
+
+Only in effect when used with C<--fetch>: when new data files from MaxMind
+have successfully been fetched and any of these is newer that what the
+database contains, update the database with the new data.
+
+=item distance
+
+command line option : C<-d> or C<--distance>
+
+default value       : False
+
+If both the location of the tool I<and> the location of the requested IP
+are known, calculate the distance between them. The default is to show
+the distance in kilometers. Choosing a configuration of C<miles> instead
+of C<True>, C<Yes>, or C<1> will show the distance in miles. There is no
+command line option for miles.
+
+The location of the tool is either locally stored in your configuration
+(see C<--local-location>) or fetched using the result of the urls
+L<C<iplocation.com>|https://iplocation.com> or
+L<C<geoiptool>|https://geoiptool.com>. This will - of course - not work
+if there is no network connection or outside traffic is not allowed.
+
+=item whois
+
+command line option : C<-w> or C<--whois>
+
+default value       : False
+
+If L<Net::Whois::IP> is installed, and this option is true, this module
+will be used to retrieve the C<whois> information. This will not work if
+there is no network connection or outside traffic is not allowed.
+
+=item short
+
+command line option : C<-s> or C<--short>
+
+default value       : False
+
+This option will disable the output of less-informative information like
+location, EU-membership, satelite and proxy. This option, if True, will also 
+implicitly disable the C<distance> and C<whois> information.
+
+=item dsn
+
+command line option : C<-Ddsn> or C<--DB=dsn>
+
+default value       : C<$ENV{EOIP_DBI_DSN}> or C<dbi:Pg:geoip>
+
+Set the database to use. Currently PostgreSQL and SQLite have been tested.
+Other DNS's might work. YMMV.
+
+If the connection works, the tables used by this tool will be created if
+not yet present.
+
+The order of usage is:
+
+ 1. Command line argument (C<--DB=dsn>)
+ 2. The C<GEOIP_DBI_DSN> environment variable
+ 3. The value for C<dsn> in the configuration file(s)
+ 4. C<dbi:Pg:dbname=geoip>
+
+=item json
+
+command line option : C<-j> or C<--json>
+
+default value       : False
+
+The default output for the information is plain text. With this option,
+the output will be in JSON format. The default is not pretty-fied.
+
+=item json-pretty
+
+command line option : C<-J> or C<--json-pretty>
+
+default value       : False
+
+If set from the command-line, this implies the C<--json> option.
+
+With this option, JSON output is done I<pretty> (indented).
+
+=item local-location
+
+command line option : C<-l lat/lon> or C<--local=lat/lon>
+
+default value       : Undefined
+
+Sets the local location coordinates for use with distances.
+
+When running the tool from a different location than where the IP access is
+to be analyzed for or when the network connection will not report a location
+that would make sense (like working from a cloud or running over one or more
+VPN connections), one can set the location of the base in decimal notation.
+(DMS notation is not yet supported).
+
+This is also useful when there is no outbound connection possible or when you
+do not move location and you want to restrict network requests.
+
+The notation is decimal where latitude and longitude are separated by a C</>,
+like C<-l 12.345678/-9.876543>.
+
+=back
+
+=head1 SEE ALSO
+
+L<DBI>, L<Net::CIDR>, <Math::Trig>, L<LWP::Simple>, L<Archive::ZIP>,
+L<Text::CSV_XS>, L<JSON::PP>, L<GIS::Distance>, L<Net::Whois::IP>,
+L<HTML::TreeBuilder>
+
+L<Geo::Coder::HostIP>, L<Geo::IP>, L<Geo::IP2Location>, L<Geo::IP2Proxy>,
+L<Geo::IPfree>, L<Geo::IP::RU::IpGeoBase>, L<IP::Country>,
+L<IP::Country::DB_File>, L<IP::Country::DNSBL>, L<IP::Info>, L<IP::Location>,
+L<IP::QQWry>, L<IP::World>, L<Metabrik::Lookup::Iplocation>, L<Pcore::GeoIP>
+
+=head1 AUTHOR
+
+H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>>, aka Tux.
+
+=head1 COPYRIGHT AND LICENSE
+
+ Copyright (C) 2019-2019 H.Merijn Brand.  All rights reserved.
+
+This library is free software;  you can redistribute and/or modify it under
+the same terms as Perl itself.
+
+=for elvis
+:ex:se gw=75|color guide #ff0000:
+
+=cut
