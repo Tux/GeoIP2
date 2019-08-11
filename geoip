@@ -647,7 +647,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    Address => $address,
 	    );
 
-	use DP;$opt_v > 8 and DDumper { wi => $wi, w => \%w };
+	$opt_v > 8 and _dump { wi => $wi, w => \%w };
 	my @wi = map { sprintf "     %-7s : %s", $_, $w{$_} }
 	         grep { length $w{$_} } qw( Name ID Phone EMail Abuse Address );
 	$json{whois} = \%w;
