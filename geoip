@@ -532,7 +532,7 @@ while (@ARGV) {
     }
 
 my $here;
-if (($conf{local_location} // "") =~ m{^(-?\d+\.\d+)\s*/\s*(-?\d+\.\d+)\s*$}) {
+if (($conf{local_location} // "") =~ m{^(-?\d+\.\d+)\s*[,/]\s*(-?\d+\.\d+)\s*$}) {
     $here = { Latitude => $1, Longitude => $2 };
     }
 elsif ($conf{distance} and eval { require LWP::UserAgent; require HTML::TreeBuilder; }) {
@@ -888,8 +888,9 @@ VPN connections), one can set the location of the base in decimal notation.
 This is also useful when there is no outbound connection possible or when you
 do not move location and you want to restrict network requests.
 
-The notation is decimal where latitude and longitude are separated by a C</>,
-like C<-l 12.345678/-9.876543>.
+The notation is decimal (with a C<.>, no localization support) where latitude
+and longitude are separated by a C</> or a C<,>, like C<-l 12.345678/-9.876543>
+or C<--local=12,3456,45,6789>.
 
 =back
 
