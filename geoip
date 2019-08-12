@@ -910,7 +910,8 @@ or C<--local=12,3456,45,6789>.
 =head1 DATABASE
 
 Currently PostgreSQL and SQLite have been tested, but others may (or may not)
-work just as well. YMMV.
+work just as well. YMMV. Note that the database need to know the C<CIDR>
+field type and is able to put a primary key on it.
 
 MariaDB and MySQL are not supported, as they do not support the concept of
 CIDR type fields.
