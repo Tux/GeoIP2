@@ -853,8 +853,7 @@ command line option : C<-Ddsn> or C<--DB=dsn>
 
 default value       : C<$ENV{EOIP_DBI_DSN}> or C<dbi:Pg:geoip>
 
-Set the database to use. Currently PostgreSQL and SQLite have been tested.
-Other DSN's might work. YMMV.
+See L</DATABASE> for the (documented) list of supported database types.
 
 If the connection works, the tables used by this tool will be created if
 not yet present.
@@ -910,8 +909,11 @@ or C<--local=12,3456,45,6789>.
 
 =head1 DATABASE
 
-Currently PostgreSQL and SQLite are tested, but others may (or may not) work
-just as well.
+Currently PostgreSQL and SQLite have been tested, but others may (or may not)
+work just as well. YMMV.
+
+MariaDB and MySQL are not supported, as they do not support the concept of
+CIDR type fields.
 
 The advantage of PostgreSQL over SQLite is that you can use it with multiple
 users at the same time, and that you can share the database with other hosts
