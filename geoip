@@ -26,6 +26,7 @@ sub usage {
     exit $err;
     } # usage
 
+# Required modules
 use DBI;
 use Socket;
 use Net::CIDR;
@@ -37,6 +38,20 @@ use Text::CSV_XS qw( csv );
 use JSON::PP;
 use Pod::Usage;
 use Getopt::Long qw(:config bundling);
+
+# Optional modules
+my $gis = eval {
+    require GIS::Distance;
+    GIS::Distance->new;
+    };
+my $use_data_peek = eval {
+    require Data::Peek;
+    1;
+    };
+my $whois = eval {
+    require Net::Whois::IP;
+    \&Net::Whois::IP::whoisip_query;
+    };
 
 my %conf = (
     update		=> 1,
@@ -69,6 +84,8 @@ GetOptions (
       "man"		=> sub { pod2usage (-verbose => 2, -exitstatus => 0); },
     ) or usage (1);
 
+$opt_v >= 7 and _dump ("Configuration", \%conf);
+
 if (defined $opt_J) {
     if ($opt_J) {
 	$conf{json_pretty}++;
@@ -79,19 +96,6 @@ if (defined $opt_J) {
 	}
     }
 $conf{json} and $opt_J = $conf{json_pretty};
-
-my $gis = eval {
-    require GIS::Distance;
-    GIS::Distance->new;
-    };
-my $use_data_peek = eval {
-    require Data::Peek;
-    1;
-    };
-my $whois = eval {
-    require Net::Whois::IP;
-    \&Net::Whois::IP::whoisip_query;
-    };
 
 my $dbh = DBI->connect ($conf{dsn}, undef, undef, {
     AutoCommit		=> 0,
