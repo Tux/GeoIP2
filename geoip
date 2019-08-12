@@ -97,12 +97,16 @@ if (defined $opt_J) {
     }
 $conf{json} and $opt_J = $conf{json_pretty};
 
-my $dbh = DBI->connect ($conf{dsn}, undef, undef, {
-    AutoCommit		=> 0,
-    RaiseError		=> 1,
-    PrintError		=> 1,
-    ShowErrorStatement	=> 1,
-    });
+my $dbh = eval {
+    local $SIG{__WARN__} = sub { $a = DBI->errstr and warn "$a\n"; };
+    local $SIG{__DIE__}  = sub { $a = DBI->errstr and warn "$a\n"; };
+    DBI->connect ($conf{dsn}, undef, undef, {
+	AutoCommit		=> 0,
+	RaiseError		=> 1,
+	PrintError		=> 1,
+	ShowErrorStatement	=> 1,
+	});
+    } or die "Cannot continue without a working database\n";
 
 sub _dump {
     my ($label, $ref) = @_;
