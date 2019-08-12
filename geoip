@@ -22,6 +22,7 @@ sub usage {
     say "   -lL --local=L      Specify local location LAT/LON";
     say "   -D  --DB=dsn       Specify geoip database DSN default: dbi:Pg:geoip";
     say "                      may be specified in \$GEOIP_DBI_DSN";
+    say "$CMD --man will show the full manual";
     exit $err;
     } # usage
 
@@ -920,14 +921,14 @@ can copy or move to your liking. This file will be somewhere around 500 Mb.
 =head2 Basic use
 
  $ geoip --short 1.2.3.4
- GeoIP data for 1.2.3.4 - (hostname not found):
-   CIDR      : 1.2.3.0/24
-   IP range  : 1.2.3.0 - 1.2.3.255
-   Provider  :
-   City      :
-   Country   : AU  Australia
-   Continent : Oceania
-   Timezone  : America/Chicago
+
+=head2 For automation
+
+ $ geoip --json --no-json-pretty 1.2.3.4
+
+=head2 Full report
+
+ $ geoip --dist --whois 1.2.3.4
 
 =head1 TODO
 
