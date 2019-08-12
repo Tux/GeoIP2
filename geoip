@@ -98,8 +98,10 @@ if (defined $opt_J) {
 $conf{json} and $opt_J = $conf{json_pretty};
 
 my $dbh = eval {
-    local $SIG{__WARN__} = sub { $a = DBI->errstr and warn "$a\n"; };
-    local $SIG{__DIE__}  = sub { $a = DBI->errstr and warn "$a\n"; };
+    my %seen;
+    my $fail = sub { my $e = DBI->errstr or return; !$seen{$e}++ and warn "$e\n"; };
+    local $SIG{__WARN__} = $fail;
+    local $SIG{__DIE__}  = $fail;
     DBI->connect ($conf{dsn}, undef, undef, {
 	AutoCommit		=> 0,
 	RaiseError		=> 1,
