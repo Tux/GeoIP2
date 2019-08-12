@@ -754,7 +754,7 @@ The output is plain text or JSON. JSON may be short or formatted.
 
 The tool allows the use of configuration files. It tests for existence of
 the files listed here. All existing files is read (in this order) if it is
-not world writable:
+only writable by the author
 
    $home/geoip.rc
    $home/.geoiprc
