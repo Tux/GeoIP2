@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.09 - 20190811";
+our $VERSION = "0.09 - 20190812";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -68,13 +68,16 @@ GetOptions (
       "man"		=> sub { pod2usage (-verbose => 2, -exitstatus => 0); },
     ) or usage (1);
 
-if ($opt_J) {
-    $conf{json_pretty}++;
-    $conf{json}++;
+if (defined $opt_J) {
+    if ($opt_J) {
+	$conf{json_pretty}++;
+	$conf{json}++;
+	}
+    else {
+	$conf{json_pretty} = 0;
+	}
     }
-if ($conf{json}) {
-    $opt_J = $conf{json_pretty};
-    }
+$conf{json} and $opt_J = $conf{json_pretty};
 
 my $gis = eval {
     require GIS::Distance;
