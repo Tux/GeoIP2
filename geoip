@@ -897,16 +897,74 @@ or C<--local=12,3456,45,6789>.
 
 =back
 
+=head1 DATABASE
+
+Currently PostgreSQL and SQLite are tested, but others may (or may not) work
+just as well.
+
+The advantage of PostgreSQL over SQLite is that you can use it with multiple
+users at the same time, and that you can share the database with other hosts
+on the same network behind a firewall.
+
+The advantage of SQLite over PostgreSQL is that it is a single file that you
+can copy or move to your liking. This file will be somewhere around 500 Mb.
+
+=head1 EXAMPLES
+
+=head2 Configuration
+
+ $ cat ~/.config/geoip
+ use_distance    : True
+ json-pretty     : yes
+
+=head2 Basic use
+
+ $ geoip --short 1.2.3.4
+ GeoIP data for 1.2.3.4 - (hostname not found):
+   CIDR      : 1.2.3.0/24
+   IP range  : 1.2.3.0 - 1.2.3.255
+   Provider  :
+   City      :
+   Country   : AU  Australia
+   Continent : Oceania
+   Timezone  : America/Chicago
+
+=head1 TODO
+
+=over 2
+
+=item IPv6
+
+The ZIP files also contain IPv6 information, but it is not (yet) converted
+to the database, nor supported in analysis.
+
+=item Modularization
+
+Split up the different parts of the script to modules: fetch, extract,
+check, database, external tools, reporting.
+
+=item CPAN
+
+Turn this into something like App::geoip, complete with Makefile.PL
+
+=back
+
 =head1 SEE ALSO
 
 L<DBI>, L<Net::CIDR>, <Math::Trig>, L<LWP::Simple>, L<Archive::ZIP>,
 L<Text::CSV_XS>, L<JSON::PP>, L<GIS::Distance>, L<Net::Whois::IP>,
-L<HTML::TreeBuilder>
+L<HTML::TreeBuilder>, L<Data::Dumper>, L<Data::Peek>, L<Socket>
 
 L<Geo::Coder::HostIP>, L<Geo::IP>, L<Geo::IP2Location>, L<Geo::IP2Proxy>,
 L<Geo::IPfree>, L<Geo::IP::RU::IpGeoBase>, L<IP::Country>,
 L<IP::Country::DB_File>, L<IP::Country::DNSBL>, L<IP::Info>, L<IP::Location>,
 L<IP::QQWry>, L<IP::World>, L<Metabrik::Lookup::Iplocation>, L<Pcore::GeoIP>
+
+Check L<CPAN|https://metacpan.org/search?q=geoip> for more.
+
+=head1 THANKS
+
+Thanks to cavac for the inspiration
 
 =head1 AUTHOR
 
@@ -914,7 +972,15 @@ H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>>, aka Tux.
 
 =head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2019-2019 H.Merijn Brand.  All rights reserved.
+The GeoLite2 databases are distributed under the Creative Commons
+Attribution-ShareAlike 4.0 International License. The attribution
+requirement may be met by including the following in all advertising
+and documentation mentioning features of or use of this database.
+
+This tool uses the GeoLite2 data created by MaxMind, available from
+[http://www.maxmind.com](http://www.maxmind.com).
+
+ Copyright (C) 2018-2019 H.Merijn Brand.  All rights reserved.
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.

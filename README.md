@@ -114,8 +114,6 @@ $ wget -m -L -nd -np -nH \
 
 - IPv6. The current version only implements the IPv4 part. The CSV files however
   also the IPv6 data, so it should not be too hard to add.
-- Help / Manual
-- Options
 
 ## SEE ALSO
 
