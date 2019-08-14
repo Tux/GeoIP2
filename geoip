@@ -965,7 +965,7 @@ Turn this into something like App::geoip, complete with Makefile.PL
 
 =head1 SEE ALSO
 
-L<DBI>, L<Net::CIDR>, <Math::Trig>, L<LWP::Simple>, L<Archive::ZIP>,
+L<DBI>, L<Net::CIDR>, L<Math::Trig>, L<LWP::Simple>, L<Archive::ZIP>,
 L<Text::CSV_XS>, L<JSON::PP>, L<GIS::Distance>, L<Net::Whois::IP>,
 L<HTML::TreeBuilder>, L<Data::Dumper>, L<Data::Peek>, L<Socket>
 
