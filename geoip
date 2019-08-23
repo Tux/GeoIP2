@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.09 - 20190812";
+our $VERSION = "0.09 - 20190823";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -970,7 +970,7 @@ L<Text::CSV_XS>, L<JSON::PP>, L<GIS::Distance>, L<Net::Whois::IP>,
 L<HTML::TreeBuilder>, L<Data::Dumper>, L<Data::Peek>, L<Socket>
 
 L<Geo::Coder::HostIP>, L<Geo::IP>, L<Geo::IP2Location>, L<Geo::IP2Proxy>,
-L<Geo::IPfree>, L<Geo::IP::RU::IpGeoBase>, L<IP::Country>,
+L<Geo::IP6>, L<Geo::IPfree>, L<Geo::IP::RU::IpGeoBase>, L<IP::Country>,
 L<IP::Country::DB_File>, L<IP::Country::DNSBL>, L<IP::Info>, L<IP::Location>,
 L<IP::QQWry>, L<IP::World>, L<Metabrik::Lookup::Iplocation>, L<Pcore::GeoIP>
 

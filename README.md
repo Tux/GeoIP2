@@ -138,6 +138,7 @@ Modules on CPAN with similar and/or related functionality:
 - [Geo::IP](https://metacpan.org/release/Geo-IP) - from maxmind
 - [Geo::IP2Location](https://metacpan.org/release/Geo-IP2Location)
 - [Geo::IP2Proxy](https://metacpan.org/release/Geo-IP2Proxy)
+- [Geo::IP6](https://metacpan.org/release/Geo-IP6)
 - [Geo::IPfree](https://metacpan.org/release/Geo-IPfree) - using [software77](http://software77.net/geo-ip/) database
 - [Geo::IP::RU::IpGeoBase](https://metacpan.org/release/Geo-IP-RU-IpGeoBase)
 - [IP::Country](https://metacpan.org/release/IP-Country)
