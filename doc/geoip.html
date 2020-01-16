@@ -1,0 +1,307 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>geoip - a tool to show geological data based on hostname or IP address(es)</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:h.m.brand@xs4all.nl" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a>
+    <ul>
+      <li><a href="#Configuration">Configuration</a></li>
+    </ul>
+  </li>
+  <li><a href="#DATABASE">DATABASE</a></li>
+  <li><a href="#EXAMPLES">EXAMPLES</a>
+    <ul>
+      <li><a href="#Configuration1">Configuration</a></li>
+      <li><a href="#Basic-use">Basic use</a></li>
+      <li><a href="#For-automation">For automation</a></li>
+      <li><a href="#Full-report">Full report</a></li>
+    </ul>
+  </li>
+  <li><a href="#TODO">TODO</a></li>
+  <li><a href="#SEE-ALSO">SEE ALSO</a></li>
+  <li><a href="#THANKS">THANKS</a></li>
+  <li><a href="#AUTHOR">AUTHOR</a></li>
+  <li><a href="#COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>geoip - a tool to show geological data based on hostname or IP address(es)</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<pre><code> geoip --help
+
+ geoip --fetch [--no-update]
+
+ geoip [options] host|IP ...</code></pre>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>This tool uses a database to use the (pre-fetched) GeoIP2 data from MaxMind to show related geographical information for IP addresses. This information can optionally be extended with information from online WHOIS services and or derived data, like distance to the location of the server this tool runs on or a configured local location.</p>
+
+<p>The output is plain text or JSON. JSON may be short or formatted.</p>
+
+<h2 id="Configuration">Configuration</h2>
+
+<p>The tool allows the use of configuration files. It tests for existence of the files listed here. All existing files is read (in this order) if it is only writable by the author</p>
+
+<pre><code>   $home/geoip.rc
+   $home/.geoiprc
+   $home/.config/geoip</code></pre>
+
+<p>The format of the file is</p>
+
+<pre><code>  # Comment
+  ; Comment
+  option : value
+  option = value</code></pre>
+
+<p>where the <code>:</code> and <code>=</code> are equal and whitespace around them is optional and ignored. The values <code>False</code> and <code>No</code> (case insensitive) are the same as <code>0</code> and the values <code>True</code> and <code>Yes</code> are equal to <code>1</code>. For readability you can prefix <code>use_</code> to most options (it is ignored). The use of <code>-</code> in option names is allowed and will be translated to <code>_</code>.</p>
+
+<p>The recognized options and the command line equivalences are</p>
+
+<dl>
+
+<dt id="fetch">fetch</dt>
+<dd>
+
+<p>command line option : <code>-f</code> or <code>--fetch</code></p>
+
+<p>default value : False</p>
+
+<p>Fetch new databases from the MaxMind site.</p>
+
+</dd>
+<dt id="update">update</dt>
+<dd>
+
+<p>command line option : <code>-u</code> or <code>--update</code></p>
+
+<p>default value : True</p>
+
+<p>Only in effect when used with <code>--fetch</code>: when new data files from MaxMind have successfully been fetched and any of these is newer that what the database contains, update the database with the new data.</p>
+
+</dd>
+<dt id="distance">distance</dt>
+<dd>
+
+<p>command line option : <code>-d</code> or <code>--distance</code></p>
+
+<p>default value : False</p>
+
+<p>If both the location of the tool <i>and</i> the location of the requested IP are known, calculate the distance between them. The default is to show the distance in kilometers. Choosing a configuration of <code>miles</code> instead of <code>True</code>, <code>Yes</code>, or <code>1</code> will show the distance in miles. There is no command line option for miles.</p>
+
+<p>The location of the tool is either locally stored in your configuration (see <code>--local-location</code>) or fetched using the result of the urls <a href="https://iplocation.com"><code>iplocation.com</code></a> or <a href="https://geoiptool.com"><code>geoiptool</code></a>. This will - of course - not work if there is no network connection or outside traffic is not allowed.</p>
+
+</dd>
+<dt id="whois">whois</dt>
+<dd>
+
+<p>command line option : <code>-w</code> or <code>--whois</code></p>
+
+<p>default value : False</p>
+
+<p>If <a>Net::Whois::IP</a> is installed, and this option is true, this module will be used to retrieve the <code>whois</code> information. This will not work if there is no network connection or outside traffic is not allowed.</p>
+
+</dd>
+<dt id="short">short</dt>
+<dd>
+
+<p>command line option : <code>-s</code> or <code>--short</code></p>
+
+<p>default value : False</p>
+
+<p>This option will disable the output of less-informative information like location, EU-membership, satellite and proxy. This option, if True, will also implicitly disable the <code>distance</code> and <code>whois</code> information.</p>
+
+</dd>
+<dt id="dsn">dsn</dt>
+<dd>
+
+<p>command line option : <code>-Ddsn</code> or <code>--DB=dsn</code></p>
+
+<p>default value : <code>$ENV{EOIP_DBI_DSN}</code> or <code>dbi:Pg:geoip</code></p>
+
+<p>See <a href="#DATABASE">&quot;DATABASE&quot;</a> for the (documented) list of supported database types.</p>
+
+<p>If the connection works, the tables used by this tool will be created if not yet present.</p>
+
+<p>The order of usage is:</p>
+
+<pre><code> 1. Command line argument (C&lt;--DB=dsn&gt;)
+ 2. The C&lt;GEOIP_DBI_DSN&gt; environment variable
+ 3. The value for C&lt;dsn&gt; in the configuration file(s)
+ 4. C&lt;dbi:Pg:dbname=geoip&gt;</code></pre>
+
+</dd>
+<dt id="json">json</dt>
+<dd>
+
+<p>command line option : <code>-j</code> or <code>--json</code></p>
+
+<p>default value : False</p>
+
+<p>The default output for the information is plain text. With this option, the output will be in JSON format. The default is not prettified.</p>
+
+</dd>
+<dt id="json-pretty">json-pretty</dt>
+<dd>
+
+<p>command line option : <code>-J</code> or <code>--json-pretty</code></p>
+
+<p>default value : False</p>
+
+<p>If set from the command-line, this implies the <code>--json</code> option.</p>
+
+<p>With this option, JSON output is done <i>pretty</i> (indented).</p>
+
+</dd>
+<dt id="local-location">local-location</dt>
+<dd>
+
+<p>command line option : <code>-l lat/lon</code> or <code>--local=lat/lon</code></p>
+
+<p>default value : Undefined</p>
+
+<p>Sets the local location coordinates for use with distances.</p>
+
+<p>When running the tool from a different location than where the IP access is to be analyzed for or when the network connection will not report a location that would make sense (like working from a cloud or running over one or more VPN connections), one can set the location of the base in decimal notation. (degree-minute-second-notation is not yet supported).</p>
+
+<p>This is also useful when there is no outbound connection possible or when you do not move location and you want to restrict network requests.</p>
+
+<p>The notation is decimal (with a <code>.</code>, no localization support) where latitude and longitude are separated by a <code>/</code> or a <code>,</code>, like <code>-l 12.345678/-9.876543</code> or <code>--local=12,3456,45,6789</code>.</p>
+
+</dd>
+<dt id="maxmind-account">maxmind-account</dt>
+<dd>
+
+<p>command line option : none</p>
+
+<p>default value : Undefined</p>
+
+<p>Currently not (yet) used. Documentation only.</p>
+
+</dd>
+<dt id="license-id">license-id</dt>
+<dd>
+
+<p>command line option : none</p>
+
+<p>default value : Undefined</p>
+
+<p>Currently not (yet) used. Documentation only.</p>
+
+</dd>
+<dt id="license-key">license-key</dt>
+<dd>
+
+<p>command line option : none</p>
+
+<p>default value : Undefined</p>
+
+<p>As downloads are only allowed/possible using a valid MaxMind account, you need to provide a valid license key in your configuration file. If you do not have an account, you can sign up <a href="https://www.maxmind.com/en/geolite2/signup">here</a>.</p>
+
+</dd>
+</dl>
+
+<h1 id="DATABASE">DATABASE</h1>
+
+<p>Currently PostgreSQL and SQLite have been tested, but others may (or may not) work just as well. YMMV. Note that the database need to know the <code>CIDR</code> field type and is able to put a primary key on it.</p>
+
+<p>MariaDB and MySQL are not supported, as they do not support the concept of CIDR type fields.</p>
+
+<p>The advantage of PostgreSQL over SQLite is that you can use it with multiple users at the same time, and that you can share the database with other hosts on the same network behind a firewall.</p>
+
+<p>The advantage of SQLite over PostgreSQL is that it is a single file that you can copy or move to your liking. This file will be somewhere around 500 Mb.</p>
+
+<h1 id="EXAMPLES">EXAMPLES</h1>
+
+<h2 id="Configuration1">Configuration</h2>
+
+<pre><code> $ cat ~/.config/geoip
+ use_distance    : True
+ json-pretty     : yes</code></pre>
+
+<h2 id="Basic-use">Basic use</h2>
+
+<pre><code> $ geoip --short 1.2.3.4</code></pre>
+
+<h2 id="For-automation">For automation</h2>
+
+<pre><code> $ geoip --json --no-json-pretty 1.2.3.4</code></pre>
+
+<h2 id="Full-report">Full report</h2>
+
+<pre><code> $ geoip --dist --whois 1.2.3.4</code></pre>
+
+<h1 id="TODO">TODO</h1>
+
+<dl>
+
+<dt id="IPv6">IPv6</dt>
+<dd>
+
+<p>The ZIP files also contain IPv6 information, but it is not (yet) converted to the database, nor supported in analysis.</p>
+
+</dd>
+<dt id="Modularization">Modularization</dt>
+<dd>
+
+<p>Split up the different parts of the script to modules: fetch, extract, check, database, external tools, reporting.</p>
+
+</dd>
+<dt id="CPAN">CPAN</dt>
+<dd>
+
+<p>Turn this into something like App::geoip, complete with Makefile.PL</p>
+
+</dd>
+</dl>
+
+<h1 id="SEE-ALSO">SEE ALSO</h1>
+
+<p><a>DBI</a>, <a>Net::CIDR</a>, <a>Math::Trig</a>, <a>LWP::Simple</a>, <a>Archive::ZIP</a>, <a>Text::CSV_XS</a>, <a>JSON::PP</a>, <a>GIS::Distance</a>, <a>Net::Whois::IP</a>, <a>HTML::TreeBuilder</a>, <a>Data::Dumper</a>, <a>Data::Peek</a>, <a>Socket</a></p>
+
+<p><a>Geo::Coder::HostIP</a>, <a>Geo::IP</a>, <a>Geo::IP2Location</a>, <a>Geo::IP2Proxy</a>, <a>Geo::IP6</a>, <a>Geo::IPfree</a>, <a>Geo::IP::RU::IpGeoBase</a>, <a>IP::Country</a>, <a>IP::Country::DB_File</a>, <a>IP::Country::DNSBL</a>, <a>IP::Info</a>, <a>IP::Location</a>, <a>IP::QQWry</a>, <a>IP::World</a>, <a>Metabrik::Lookup::Iplocation</a>, <a>Pcore::GeoIP</a></p>
+
+<p>Check <a href="https://metacpan.org/search?q=geoip">CPAN</a> for more.</p>
+
+<h1 id="THANKS">THANKS</h1>
+
+<p>Thanks to cavac for the inspiration</p>
+
+<h1 id="AUTHOR">AUTHOR</h1>
+
+<p>H.Merijn Brand <i>&lt;h.m.brand@xs4all.nl&gt;</i>, aka Tux.</p>
+
+<h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
+
+<p>The GeoLite2 end-user license agreement, which incorporates components of the Creative Commons Attribution-ShareAlike 4.0 International License 1) can be found <a href="https://www.maxmind.com/en/geolite2/eula">here</a> 2). The attribution requirement may be met by including the following in all advertising and documentation mentioning features of or use of this database.</p>
+
+<p>This tool uses, but does not include, the GeoLite2 data created by MaxMind, available from [http://www.maxmind.com](http://www.maxmind.com).</p>
+
+<pre><code> Copyright (C) 2018-2020 H.Merijn Brand.  All rights reserved.</code></pre>
+
+<p>This library is free software; you can redistribute and/or modify it under the same terms as Perl itself. See <a href="https://opensource.org/licenses/Artistic-2.0|here">https://opensource.org/licenses/Artistic-2.0|here</a> 3).</p>
+
+<pre><code> 1) https://creativecommons.org/licenses/by-sa/4.0/
+ 2) https://www.maxmind.com/en/geolite2/eula
+ 3) https://opensource.org/licenses/Artistic-2.0</code></pre>
+
+
+</body>
+
+</html>
+
+

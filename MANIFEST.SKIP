@@ -1,0 +1,16 @@
+^\.aspell.local.pws
+^\.git.*
+^\.whitesource
+^2lib
+^blib
+^doc
+^sandbox
+^Talk
+[gbx]z$
+MANIFEST.SKIP
+^Makefile$
+^pm_to
+^MYMETA
+^\.releaserc
+^\.travis.yml
+.*\.zip$

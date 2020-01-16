@@ -1,6 +1,6 @@
 #!/pro/bin/perl
 
-use 5.12.0;
+use 5.14.0;
 use warnings;
 
 our $VERSION = "0.10 - 20200116";
@@ -746,6 +746,8 @@ sub getconf {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 geoip - a tool to show geological data based on hostname or IP address(es)
@@ -931,7 +933,7 @@ command line option : none
 
 default value       : Undefined
 
-As downloads are only allowed/possible using a valid Maxmind account, you need
+As downloads are only allowed/possible using a valid MaxMind account, you need
 to provide a valid license key in your configuration file. If you do not have
 an account, you can sign up L<here|https://www.maxmind.com/en/geolite2/signup>.
 
@@ -1016,8 +1018,9 @@ H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>>, aka Tux.
 
 =head1 COPYRIGHT AND LICENSE
 
-The GeoLite2 databases are distributed under the Creative Commons
-Attribution-ShareAlike 4.0 International License. The attribution requirement
+The GeoLite2 end-user license agreement, which incorporates components of the
+Creative Commons Attribution-ShareAlike 4.0 International License 1) can be found
+L<here|https://www.maxmind.com/en/geolite2/eula> 2). The attribution requirement
 may be met by including the following in all advertising and documentation
 mentioning features of or use of this database.
 
@@ -1028,6 +1031,11 @@ available from [http://www.maxmind.com](http://www.maxmind.com).
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.
+See L<https://opensource.org/licenses/Artistic-2.0|here> 3).
+
+ 1) https://creativecommons.org/licenses/by-sa/4.0/
+ 2) https://www.maxmind.com/en/geolite2/eula
+ 3) https://opensource.org/licenses/Artistic-2.0
 
 =for elvis
 :ex:se gw=75|color guide #ff0000:

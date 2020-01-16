@@ -35,7 +35,7 @@ GeoIP data for 66.39.54.27 - www.perlmonks.com:
    City      : Pittsburgh, 508, 15203
    Country   : US  United States
    Continent : North America
-   Location  :   40.4254 /  -79.9799 (1000)   40°25'31.44" /  -79°58'47.64"
+   Location  :   40.4254 /  -79.9799 (1000)   40Â°25'31.44" /  -79Â°58'47.64"
                https://www.openstreetmap.org/#map=10/40.4254/-79.9799
                https://www.google.com/maps/place/@40.4254,-79.9799,10z
    Timezone  : America/New_York
@@ -54,11 +54,11 @@ GeoIP data for 66.39.54.27 - www.perlmonks.com:
    City      : Pittsburgh, 508, 15203
    Country   : US  United States
    Continent : North America
-   Location  :   40.4254 /  -79.9799 (1000)   40°25'31.44" /  -79°58'47.64"
+   Location  :   40.4254 /  -79.9799 (1000)   40Â°25'31.44" /  -79Â°58'47.64"
                https://www.openstreetmap.org/#map=10/40.4254/-79.9799
                https://www.google.com/maps/place/@40.4254,-79.9799,10z
-   Location  :   52.3824 /    4.8995          52°22'56.64" /    4°53'58.20"
-   Distance  : ± 6258.19km
+   Location  :   52.3824 /    4.8995          52Â°22'56.64" /    4Â°53'58.20"
+   Distance  : Â± 6258.19km
    Timezone  : America/New_York
    EU member : No
    Satellite : No
@@ -67,7 +67,7 @@ GeoIP data for 66.39.54.27 - www.perlmonks.com:
 
 ## PREREQUISITES
 
-- perl-5.12.0
+- perl-5.14.0
 - Socket (CORE since per-5.000)
 - [Archive::Zip](https://metacpan.org/release/Archive-Zip)
 - [Text::CSV_XS](https://metacpan.org/release/Text-CSV_XS)-1.35
@@ -163,15 +163,21 @@ H.Merijn Brand <h.m.brand@xs4all.nl>
 
 ## COPYRIGHT AND LICENSE
 
-The GeoLite2 databases are distributed under the Creative Commons
-Attribution-ShareAlike 4.0 International License. The attribution
-requirement may be met by including the following in all advertising
-and documentation mentioning features of or use of this database.
+The GeoLite2 end-user license agreement, which incorporates components of the
+Creative Commons Attribution-ShareAlike 4.0 International License 1) can be found
+[here](https://www.maxmind.com/en/geolite2/eula) 2). The attribution requirement
+may be met by including the following in all advertising and documentation
+mentioning features of or use of this database.
 
-This tool uses the GeoLite2 data created by MaxMind, available from
-[http://www.maxmind.com](http://www.maxmind.com).
+This tool uses, but does not include, the GeoLite2 data created by MaxMind,
+available from [http://www.maxmind.com](http://www.maxmind.com).
 
-Copyright (c) 2018-2019 H.Merijn Brand.  All rights reserved.
+ Copyright (C) 2018-2020 H.Merijn Brand.  All rights reserved.
 
-This tool is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This library is free software;  you can redistribute and/or modify it under
+the same terms as Perl itself.
+See [here](https://opensource.org/licenses/Artistic-2.0) 3).
+
+ 1) [https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)
+ 2) [https://www.maxmind.com/en/geolite2/eula](https://www.maxmind.com/en/geolite2/eula)
+ 3) [https://opensource.org/licenses/Artistic-2.0](https://opensource.org/licenses/Artistic-2.0)
