@@ -3,7 +3,7 @@
 use 5.12.0;
 use warnings;
 
-our $VERSION = "0.09 - 20190823";
+our $VERSION = "0.10 - 20200116";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -222,13 +222,17 @@ sub dtsz {
     } # dtsz
 
 if ($conf{fetch}) {
-    my $base = "http://geolite.maxmind.com/download/geoip/database";
-    foreach my $f (qw(	GeoLite2-ASN-CSV.zip
-			GeoLite2-Country-CSV.zip
-			GeoLite2-City-CSV.zip
+    my $key = $conf{license_key} or die "No license key in config file\n";
+    my $base = "https://download.maxmind.com/app/geoip_download?edition_id=";
+    foreach my $db (qw(	GeoLite2-ASN-CSV
+			GeoLite2-Country-CSV
+			GeoLite2-City-CSV
 			)) {
+	my $f = "$db.zip";
 	printf STDERR     "%34s %s\n",     dtsz ($f), $f;
-	my $c = mirror ("$base/$f", $f);
+	my $url = join "&" => "$base$db", "license_key=$key", "suffix=zip";
+	$opt_v > 5 and warn "Fetching $url ...\n";
+	my $c = mirror ($url, $f);
 	printf STDERR "%4d %29s %s\n", $c, dtsz ($f), $f;
 	}
     }
@@ -570,7 +574,7 @@ elsif ($conf{distance} and eval { require LWP::UserAgent; require HTML::TreeBuil
     foreach my $url (qw( https://iplocation.com https://geoiptool.com )) {
 	my $rsp = $ua->request (HTTP::Request->new (GET => $url));
 	if ($rsp->is_success) {
-	    $opt_v > 1 and say "$url: OK";
+	    $opt_v > 1 and warn "$url: OK\n";
 	    my $tree = HTML::TreeBuilder->new ();
 	    if ($tree->parse_content ($rsp->content)) {
 		foreach my $e ($tree->look_down (_tag => "div", class => "data-item")) {
@@ -905,6 +909,32 @@ The notation is decimal (with a C<.>, no localization support) where latitude
 and longitude are separated by a C</> or a C<,>, like C<-l 12.345678/-9.876543>
 or C<--local=12,3456,45,6789>.
 
+=item maxmind-account
+
+command line option : none
+
+default value       : Undefined
+
+Currently not (yet) used. Documentation only.
+
+=item license-id
+
+command line option : none
+
+default value       : Undefined
+
+Currently not (yet) used. Documentation only.
+
+=item license-key
+
+command line option : none
+
+default value       : Undefined
+
+As downloads are only allowed/possible using a valid Maxmind account, you need
+to provide a valid license key in your configuration file. If you do not have
+an account, you can sign up L<here|https://www.maxmind.com/en/geolite2/signup>.
+
 =back
 
 =head1 DATABASE
@@ -987,14 +1017,14 @@ H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>>, aka Tux.
 =head1 COPYRIGHT AND LICENSE
 
 The GeoLite2 databases are distributed under the Creative Commons
-Attribution-ShareAlike 4.0 International License. The attribution
-requirement may be met by including the following in all advertising
-and documentation mentioning features of or use of this database.
+Attribution-ShareAlike 4.0 International License. The attribution requirement
+may be met by including the following in all advertising and documentation
+mentioning features of or use of this database.
 
-This tool uses the GeoLite2 data created by MaxMind, available from
-[http://www.maxmind.com](http://www.maxmind.com).
+This tool uses, but does not include, the GeoLite2 data created by MaxMind,
+available from [http://www.maxmind.com](http://www.maxmind.com).
 
- Copyright (C) 2018-2019 H.Merijn Brand.  All rights reserved.
+ Copyright (C) 2018-2020 H.Merijn Brand.  All rights reserved.
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.

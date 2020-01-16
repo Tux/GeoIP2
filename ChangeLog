@@ -1,3 +1,6 @@
+0.10	- 2020-01-16, H.Merijn Brand
+    * Support download using Maxmind license key
+
 0.09	- 2019-08-12, H.Merijn Brand
     * Support whois (-w / --whois)
     * Support JSON (-j / --json, -J --json-pretty)
