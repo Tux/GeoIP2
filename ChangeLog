@@ -1,3 +1,15 @@
+0.09	- 2019-08-12, H.Merijn Brand
+    * Support whois (-w / --whois)
+    * Support JSON (-j / --json, -J --json-pretty)
+    * Support fixed local location (-l / --local)
+    * Support alternate database (-D / --DB)
+    * Full manual
+    * Support configuration file(s)
+
+0.07	- 2019-03-09, H.Merijn Brand
+    * Use Data::Peek for diagnoses or Data::Dumper if not installed
+    * Use alternatives to determine own location
+
 0.06	- 2019-04-11, H.Merijn Brand
     * Add -s/--short
     * Use GIS::Distance if available
