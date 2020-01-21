@@ -24,7 +24,7 @@ $meta->gen_cpanfile ();
 if ($check) {
     $meta->check_encoding ();
     $meta->check_required ();
-    $meta->check_minimum ("5.014", [ "geoip" ]);
+    $meta->check_minimum ("5.14", [ "geoip" ]);
     $meta->done_testing ();
     }
 elsif ($opt_v) {
@@ -62,7 +62,7 @@ requires:
     Socket:              0
     Text::CSV_XS:        1.39
 recommends:
-    Archive::Zip:        1.66
+    Archive::Zip:        1.67
     Data::Dumper:        2.173
     DBI:                 1.642
     Getopt::Long:        2.51
