@@ -1,3 +1,6 @@
+0.12	- 2020-04-05, H.Merijn Brand
+    * Add option to select CIDR's for country
+
 0.11	- 2020-01-21, H.Merijn Brand
     * Release!
 
