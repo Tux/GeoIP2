@@ -482,8 +482,8 @@ if ($query_c) {
     $sth->execute;
     $sth->bind_columns (\my ($id, $name, $cont));
     while ($sth->fetch) {
-	$name =~ m/^ $query_c $/ix and $ctry{full}{$id} = [ $name, $cont ];
-	$name =~ m/  $query_c  /ix and $ctry{part}{$id} = [ $name, $cont ];
+	$name =~ m/^ $query_c $/ix and $ctry{full}{$id} = [ $name, $cont, 0, 0 ];
+	$name =~ m/  $query_c  /ix and $ctry{part}{$id} = [ $name, $cont, 0, 0 ];
 	}
     $sth->finish;
     if    (keys %{$ctry{full}}) {
@@ -497,22 +497,32 @@ if ($query_c) {
 	die "No matching country found for $query_c\n";
 	}
 
-    if ($opt_v) {
-	warn "Selecting CIDR's for\n";
-	printf STDERR " %-30s %s\n", $_->[0], $cont{$_->[1]} for
-	    sort { $a->[0] cmp $b->[0] } values %ctry;
-	}
-
-    $sth = $dbh->prepare ("select cidr, reg_country_id from ipv4 order by reg_country_id, cidr");
+    $sth = $dbh->prepare (join " " =>
+	"select   cidr, reg_country_id, ip_from_n, ip_to_n",
+	"from     ipv4",
+	"order by reg_country_id, cidr");
     $sth->execute;
-    $sth->bind_columns (\my $cidr, \$id);
+    $sth->bind_columns (\my $cidr, \$id, \my $from, \my $to);
     while ($sth->fetch) {
 	defined $id or next;
 	my $c = $ctry{$id} or next;
 	say $cidr;
+	$c->[2]++;
+	$c->[3] += $to - $from + 1;
 	}
     $sth->finish;
     $dbh->rollback;
+
+    if ($opt_v) {
+	my @w = (6, 10, 40, 15);
+	printf STDERR "%s\n%$w[0]s %$w[1]s %-$w[2]s %s\n%s %s %s %s\n",
+	    "Selected CIDR's", "# CIDR", "# IP", "Country", "Continent",
+	    map { "-" x $_ } @w;
+	printf STDERR "%$w[0]d %$w[1]d %-$w[2].$w[2]s %s\n",
+	    @{$_}[2, 3, 0], $cont{$_->[1]} for
+		sort { $a->[0] cmp $b->[0] } values %ctry;
+	}
+
     exit 0;
     }
 
@@ -1020,9 +1030,28 @@ can copy or move to your liking. This file will be somewhere around 500 Mb.
 
  $ geoip --dist --whois 1.2.3.4
 
-=head2 List all CIDR's for Vatican City
+=head2 Selecting CIDR's for countries
 
- $ geoip --country=Vatican
+=head3 List all CIDR's for Vatican City
+
+ $ geoip --country=Vatican > vatican-city.cidr
+
+=head3 Statistics
+
+If you enable verbosity, the selected statistics will be presented at the
+end of the CIDR-list: number of CIDR's, number of enclosed IP's, name of
+the country and the continent. As the country name is just a perl regex,
+you can select all countries with C<.>, or all countries that start with
+a C<V>:
+
+ $ geoip --country=^V -v >/dev/null
+ Selected CIDR's
+ # CIDR       # IP Country               Continent
+ ------ ---------- --------------------- ---------------
+     21      18176 Vanuatu               Oceania
+    321      13056 Vatican City          Europe
+    272    6798500 Venezuela             South America
+    612   16014080 Vietnam               Asia
 
 =head1 TODO
 
