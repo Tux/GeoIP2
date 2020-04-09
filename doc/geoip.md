@@ -1,6 +1,6 @@
 # NAME
 
-geoip - a tool to show geological data based on hostname or IP address(es)
+geoip - a tool to show geographical data based on hostname or IP address(es)
 
 # SYNOPSIS
 
