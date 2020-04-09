@@ -1,3 +1,6 @@
+0.14	- 2020-04-09, H.Merijn Brand
+    * geological -> geographical (Shlomi Fish)
+
 0.13	- 2020-04-09, H.Merijn Brand
     * Make 5.14.0 explicit in Makefile.PL
 
