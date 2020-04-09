@@ -62,17 +62,17 @@ requires:
     Socket:              0
     Text::CSV_XS:        1.39
 recommends:
-    Archive::Zip:        1.67
+    Archive::Zip:        1.68
     Data::Dumper:        2.173
-    DBI:                 1.642
+    DBI:                 1.643
     Getopt::Long:        2.51
     JSON::PP:            4.04
     LWP::Simple:         6.43
     Math::Trig:          1.23
     Net::CIDR:           0.20
-    Pod::Usage:          1.69
+    Pod::Usage:          1.70
     Socket:              2.029
-    Text::CSV_XS:        1.40
+    Text::CSV_XS:        1.41
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:

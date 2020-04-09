@@ -4,7 +4,7 @@
 <head>
 <title>geoip - a tool to show geological data based on hostname or IP address(es)</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link rev="made" href="mailto:hmbrand@cpan.org" />
+<link rev="made" href="mailto:h.m.brand@xs4all.nl" />
 </head>
 
 <body>
@@ -26,6 +26,12 @@
       <li><a href="#Basic-use">Basic use</a></li>
       <li><a href="#For-automation">For automation</a></li>
       <li><a href="#Full-report">Full report</a></li>
+      <li><a href="#Selecting-CIDRs-for-countries">Selecting CIDR&#39;s for countries</a>
+        <ul>
+          <li><a href="#List-all-CIDRs-for-Vatican-City">List all CIDR&#39;s for Vatican City</a></li>
+          <li><a href="#Statistics">Statistics</a></li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li><a href="#TODO">TODO</a></li>
@@ -244,6 +250,25 @@
 <h2 id="Full-report">Full report</h2>
 
 <pre><code> $ geoip --dist --whois 1.2.3.4</code></pre>
+
+<h2 id="Selecting-CIDRs-for-countries">Selecting CIDR&#39;s for countries</h2>
+
+<h3 id="List-all-CIDRs-for-Vatican-City">List all CIDR&#39;s for Vatican City</h3>
+
+<pre><code> $ geoip --country=Vatican &gt; vatican-city.cidr</code></pre>
+
+<h3 id="Statistics">Statistics</h3>
+
+<p>If you enable verbosity, the selected statistics will be presented at the end of the CIDR-list: number of CIDR&#39;s, number of enclosed IP&#39;s, name of the country and the continent. As the country name is just a perl regex, you can select all countries with <code>.</code>, or all countries that start with a <code>V</code>:</p>
+
+<pre><code> $ geoip --country=^V -v &gt;/dev/null
+ Selected CIDR&#39;s
+ # CIDR       # IP Country               Continent
+ ------ ---------- --------------------- ---------------
+     21      18176 Vanuatu               Oceania
+    321      13056 Vatican City          Europe
+    272    6798500 Venezuela             South America
+    612   16014080 Vietnam               Asia</code></pre>
 
 <h1 id="TODO">TODO</h1>
 

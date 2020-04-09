@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-01-21" "perl v5.30.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-04-09" "perl v5.28.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -354,6 +354,34 @@ can copy or move to your liking. This file will be somewhere around 500 Mb.
 .IX Subsection "Full report"
 .Vb 1
 \& $ geoip \-\-dist \-\-whois 1.2.3.4
+.Ve
+.SS "Selecting \s-1CIDR\s0's for countries"
+.IX Subsection "Selecting CIDR's for countries"
+\fIList all \s-1CIDR\s0's for Vatican City\fR
+.IX Subsection "List all CIDR's for Vatican City"
+.PP
+.Vb 1
+\& $ geoip \-\-country=Vatican > vatican\-city.cidr
+.Ve
+.PP
+\fIStatistics\fR
+.IX Subsection "Statistics"
+.PP
+If you enable verbosity, the selected statistics will be presented at the
+end of the CIDR-list: number of \s-1CIDR\s0's, number of enclosed \s-1IP\s0's, name of
+the country and the continent. As the country name is just a perl regex,
+you can select all countries with \f(CW\*(C`.\*(C'\fR, or all countries that start with
+a \f(CW\*(C`V\*(C'\fR:
+.PP
+.Vb 8
+\& $ geoip \-\-country=^V \-v >/dev/null
+\& Selected CIDR\*(Aqs
+\& # CIDR       # IP Country               Continent
+\& \-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+\&     21      18176 Vanuatu               Oceania
+\&    321      13056 Vatican City          Europe
+\&    272    6798500 Venezuela             South America
+\&    612   16014080 Vietnam               Asia
 .Ve
 .SH "TODO"
 .IX Header "TODO"

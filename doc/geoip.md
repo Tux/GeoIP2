@@ -221,6 +221,29 @@ can copy or move to your liking. This file will be somewhere around 500 Mb.
 
     $ geoip --dist --whois 1.2.3.4
 
+## Selecting CIDR's for countries
+
+### List all CIDR's for Vatican City
+
+    $ geoip --country=Vatican > vatican-city.cidr
+
+### Statistics
+
+If you enable verbosity, the selected statistics will be presented at the
+end of the CIDR-list: number of CIDR's, number of enclosed IP's, name of
+the country and the continent. As the country name is just a perl regex,
+you can select all countries with `.`, or all countries that start with
+a `V`:
+
+    $ geoip --country=^V -v >/dev/null
+    Selected CIDR's
+    # CIDR       # IP Country               Continent
+    ------ ---------- --------------------- ---------------
+        21      18176 Vanuatu               Oceania
+       321      13056 Vatican City          Europe
+       272    6798500 Venezuela             South America
+       612   16014080 Vietnam               Asia
+
 # TODO
 
 - IPv6

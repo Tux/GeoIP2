@@ -210,6 +210,28 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mFull report[0m
         $ geoip --dist --whois 1.2.3.4
 
+   [1mSelecting CIDR's for countries[0m
+       [4mList[24m [4mall[24m [4mCIDR's[24m [4mfor[24m [4mVatican[24m [4mCity[0m
+
+        $ geoip --country=Vatican > vatican-city.cidr
+
+       [4mStatistics[0m
+
+       If you enable verbosity, the selected statistics will be presented at
+       the end of the CIDR-list: number of CIDR's, number of enclosed IP's,
+       name of the country and the continent. As the country name is just a
+       perl regex, you can select all countries with ".", or all countries
+       that start with a "V":
+
+        $ geoip --country=^V -v >/dev/null
+        Selected CIDR's
+        # CIDR       # IP Country               Continent
+        ------ ---------- --------------------- ---------------
+            21      18176 Vanuatu               Oceania
+           321      13056 Vatican City          Europe
+           272    6798500 Venezuela             South America
+           612   16014080 Vietnam               Asia
+
 [1mTODO[0m
        IPv6
          The ZIP files also contain IPv6 information, but it is not (yet)
@@ -264,4 +286,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.30.0                      2020-01-21                          STDIN(1)
+perl v5.28.0                      2020-04-09                          STDIN(1)
