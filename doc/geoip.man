@@ -3,7 +3,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 [1mNAME[0m
-       geoip - a tool to show geological data based on hostname or IP
+       geoip - a tool to show geographical data based on hostname or IP
        address(es)
 
 [1mSYNOPSIS[0m

@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker;
 my %wmf = (
     NAME               => "App::geoip",
     DISTNAME           => "App-geoip",
-    ABSTRACT           => "Show geological data based on hostname or IP address(es)",
+    ABSTRACT           => "Show geographical data based on hostname or IP address(es)",
     AUTHOR             => "H.Merijn Brand",
     EXE_FILES          => [ "geoip" ],
     VERSION_FROM       => "lib/App/geoip.pm",

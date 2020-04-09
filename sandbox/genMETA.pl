@@ -38,7 +38,7 @@ __END__
 --- #YAML:1.0
 name:                    App-geoip
 version:                 VERSION
-abstract:                Show geological data based on hostname or IP address(es)
+abstract:                Show geographical data based on hostname or IP address(es)
 license:                 perl
 author:
     - H.Merijn Brand <h.m.brand@xs4all.nl>
