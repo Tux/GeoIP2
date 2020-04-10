@@ -4,9 +4,10 @@ requires   "Data::Dumper";
 requires   "Getopt::Long";
 requires   "JSON::PP";
 requires   "LWP::Simple";
+requires   "List::Util";
 requires   "Math::Trig";
 requires   "Net::CIDR";
-requires   "Pod::Usage";
+requires   "Pod::Text";
 requires   "Socket";
 requires   "Text::CSV_XS"             => "1.39";
 

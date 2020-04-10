@@ -58,7 +58,8 @@ requires:
     LWP::Simple:         0
     Math::Trig:          0
     Net::CIDR:           0
-    Pod::Usage:          0
+    Pod::Text:           0
+    List::Util:          0
     Socket:              0
     Text::CSV_XS:        1.39
 recommends:
