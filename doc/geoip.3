@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH STDIN 1 "2020-04-09" "perl v5.28.0" "User Contributed Perl Documentation"
+.TH STDIN 1 "2020-06-24" "perl v5.32.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -249,13 +249,18 @@ If the connection works, the tables used by this tool will be created if
 not yet present.
 .Sp
 The order of usage is:
-.Sp
-.Vb 4
-\& 1. Command line argument (C<\-\-DB=dsn>)
-\& 2. The C<GEOIP_DBI_DSN> environment variable
-\& 3. The value for C<dsn> in the configuration file(s)
-\& 4. C<dbi:Pg:dbname=geoip>
-.Ve
+.RS 2
+.IP "1." 2
+Command line argument (\f(CW\*(C`\-\-DB=dsn\*(C'\fR)
+.IP "2." 2
+The \f(CW\*(C`GEOIP_DBI_DSN\*(C'\fR environment variable
+.IP "3." 2
+The value for \f(CW\*(C`dsn\*(C'\fR in the configuration file(s)
+.IP "4." 2
+\&\f(CW\*(C`dbi:Pg:dbname=geoip\*(C'\fR
+.RE
+.RS 2
+.RE
 .IP "json" 2
 .IX Item "json"
 command line option : \f(CW\*(C`\-j\*(C'\fR or \f(CW\*(C`\-\-json\*(C'\fR

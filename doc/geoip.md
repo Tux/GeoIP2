@@ -114,10 +114,10 @@ The recognized options and the command line equivalences are
 
     The order of usage is:
 
-        1. Command line argument (C<--DB=dsn>)
-        2. The C<GEOIP_DBI_DSN> environment variable
-        3. The value for C<dsn> in the configuration file(s)
-        4. C<dbi:Pg:dbname=geoip>
+    1. Command line argument (`--DB=dsn`)
+    2. The `GEOIP_DBI_DSN` environment variable
+    3. The value for `dsn` in the configuration file(s)
+    4. `dbi:Pg:dbname=geoip`
 
 - json
 

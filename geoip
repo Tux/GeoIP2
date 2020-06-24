@@ -946,10 +946,25 @@ not yet present.
 
 The order of usage is:
 
- 1. Command line argument (C<--DB=dsn>)
- 2. The C<GEOIP_DBI_DSN> environment variable
- 3. The value for C<dsn> in the configuration file(s)
- 4. C<dbi:Pg:dbname=geoip>
+=over 2
+
+=item 1
+
+Command line argument (C<--DB=dsn>)
+
+=item 2
+
+The C<GEOIP_DBI_DSN> environment variable
+
+=item 3
+
+The value for C<dsn> in the configuration file(s)
+
+=item 4
+
+C<dbi:Pg:dbname=geoip>
+
+=back
 
 =item json
 

@@ -110,10 +110,17 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
          The order of usage is:
 
-          1. Command line argument (C<--DB=dsn>)
-          2. The C<GEOIP_DBI_DSN> environment variable
-          3. The value for C<dsn> in the configuration file(s)
-          4. C<dbi:Pg:dbname=geoip>
+         1.
+           Command line argument ("--DB=dsn")
+
+         2.
+           The "GEOIP_DBI_DSN" environment variable
+
+         3.
+           The value for "dsn" in the configuration file(s)
+
+         4.
+           "dbi:Pg:dbname=geoip"
 
        json
          command line option : "-j" or "--json"
@@ -286,4 +293,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.28.0                      2020-04-09                          STDIN(1)
+perl v5.32.0                      2020-06-24                          STDIN(1)

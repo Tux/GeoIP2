@@ -4,7 +4,7 @@
 <head>
 <title>geoip - a tool to show geographical data based on hostname or IP address(es)</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link rev="made" href="mailto:h.m.brand@xs4all.nl" />
+<link rev="made" href="mailto:hmbrand@cpan.org" />
 </head>
 
 <body>
@@ -145,10 +145,21 @@
 
 <p>The order of usage is:</p>
 
-<pre><code> 1. Command line argument (C&lt;--DB=dsn&gt;)
- 2. The C&lt;GEOIP_DBI_DSN&gt; environment variable
- 3. The value for C&lt;dsn&gt; in the configuration file(s)
- 4. C&lt;dbi:Pg:dbname=geoip&gt;</code></pre>
+<ol>
+
+<li><p>Command line argument (<code>--DB=dsn</code>)</p>
+
+</li>
+<li><p>The <code>GEOIP_DBI_DSN</code> environment variable</p>
+
+</li>
+<li><p>The value for <code>dsn</code> in the configuration file(s)</p>
+
+</li>
+<li><p><code>dbi:Pg:dbname=geoip</code></p>
+
+</li>
+</ol>
 
 </dd>
 <dt id="json">json</dt>
