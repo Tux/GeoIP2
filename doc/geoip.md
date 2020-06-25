@@ -296,7 +296,7 @@ available from \[http://www.maxmind.com\](http://www.maxmind.com).
 
 This library is free software;  you can redistribute and/or modify it under
 the same terms as Perl itself.
-See [https://opensource.org/licenses/Artistic-2.0|here](https://opensource.org/licenses/Artistic-2.0|here) 3).
+See [here](https://opensource.org/licenses/Artistic-2.0) 3).
 
     1) https://creativecommons.org/licenses/by-sa/4.0/
     2) https://www.maxmind.com/en/geolite2/eula

@@ -284,8 +284,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
         Copyright (C) 2018-2020 H.Merijn Brand.  All rights reserved.
 
        This library is free software;  you can redistribute and/or modify it
-       under the same terms as Perl itself.  See
-       <https://opensource.org/licenses/Artistic-2.0|here> 3).
+       under the same terms as Perl itself.  See here
+       <https://opensource.org/licenses/Artistic-2.0> 3).
 
         1) https://creativecommons.org/licenses/by-sa/4.0/
         2) https://www.maxmind.com/en/geolite2/eula
@@ -293,4 +293,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.0                      2020-06-24                          STDIN(1)
+perl v5.32.0                      2020-06-25                          STDIN(1)
