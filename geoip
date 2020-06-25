@@ -3,7 +3,7 @@
 use 5.14.0;
 use warnings;
 
-our $VERSION = "0.14 - 20200410";
+our $VERSION = "0.14 - 20200625";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -124,18 +124,27 @@ if (defined $opt_J) {
     }
 $conf{json} and $opt_J = $conf{json_pretty};
 
-my $dbh = eval {
-    my %seen;
-    my $fail = sub { my $e = DBI->errstr or return; !$seen{$e}++ and warn "$e\n"; };
-    local $SIG{__WARN__} = $fail;
-    local $SIG{__DIE__}  = $fail;
-    DBI->connect ($conf{dsn}, undef, undef, {
-	AutoCommit		=> 0,
-	RaiseError		=> 1,
-	PrintError		=> 1,
-	ShowErrorStatement	=> 1,
-	});
-    } or die "Cannot continue without a working database\n";
+my $dbh = do {
+    my $dsn = $conf{dsn} =~ s{^b=(?=\w+:)}{}ir; # catch -DB=.. instead of --DB=
+    my $help = $dsn =~ m/^dbi:(\w+):/i
+	? "Did you forget to install DBD::$1?"
+	: "Maybe the matching DBD for $dsn is not installed";
+    eval {
+	my %seen;
+	my $fail = sub {
+	    my $e = DBI->errstr or return;
+	    !$seen{$e}++ and warn "$e\n";
+	    };
+	local $SIG{__WARN__} = $fail;
+	local $SIG{__DIE__}  = $fail;
+	DBI->connect ($conf{dsn}, undef, undef, {
+	    AutoCommit		=> 0,
+	    RaiseError		=> 1,
+	    PrintError		=> 1,
+	    ShowErrorStatement	=> 1,
+	    });
+	} or die "Cannot continue without a working database\n$help\n";
+    };
 
 sub _dump {
     my ($label, $ref) = @_;
