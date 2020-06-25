@@ -163,17 +163,17 @@ my $truncate = $conf{dsn} =~ m/:SQLite/ ? "delete from" : "truncate table";
 
 unless (grep m/\b country \b/ix => $dbh->tables (undef, undef, undef, undef)) {
     say "Create table stamps";
-    $dbh->do (qq; create table stamps (                                                                                                                                       
+    $dbh->do (qq; create table stamps (
 	name		text		not null	primary key,
 	stamp		bigint);
 	);
     say "Create table continent";
-    $dbh->do (qq; create table continent (                                                                                                                                       
+    $dbh->do (qq; create table continent (
 	id		char (4)	not null	primary key,
 	name		text);
 	);
     say "Create table country";
-    $dbh->do (qq; create table country (                                                                                                                                       
+    $dbh->do (qq; create table country (
 	id		bigint		not null	primary key,
 	name		text		not null,
 	iso		text,
@@ -181,7 +181,7 @@ unless (grep m/\b country \b/ix => $dbh->tables (undef, undef, undef, undef)) {
 	eu		smallint);
 	);
     say "Create table ipv4"; # Country based
-    $dbh->do (qq; create table ipv4 (                                                                                                                                       
+    $dbh->do (qq; create table ipv4 (
 	cidr		cidr		not null	primary key,
 	id		bigint,
 	ip_from		text		not null,
@@ -195,7 +195,7 @@ unless (grep m/\b country \b/ix => $dbh->tables (undef, undef, undef, undef)) {
 	);
     $dbh->do (qq; create index i_ipv4_ip on ipv4 $idx_type (ip_from_n, ip_to_n););
     say "Create table provider";
-    $dbh->do (qq; create table provider (                                                                                                                                       
+    $dbh->do (qq; create table provider (
 	cidr		cidr		not null	primary key,
 	id		bigint,
 	name		text,
@@ -206,7 +206,7 @@ unless (grep m/\b country \b/ix => $dbh->tables (undef, undef, undef, undef)) {
 	);
     $dbh->do (qq; create index i_provider_ip on provider $idx_type (ip_from_n, ip_to_n););
     say "Create table city";
-    $dbh->do (qq; create table city (                                                                                                                                       
+    $dbh->do (qq; create table city (
 	id		bigint		not null	primary key,
 	name		text,
 	country_id	bigint,
@@ -215,7 +215,7 @@ unless (grep m/\b country \b/ix => $dbh->tables (undef, undef, undef, undef)) {
 	eu		smallint);
 	);
     say "Create table ipc4"; # City based
-    $dbh->do (qq; create table ipc4 (                                                                                                                                       
+    $dbh->do (qq; create table ipc4 (
 	cidr		cidr		not null	primary key,
 	id		bigint,
 	ip_from		text		not null,
@@ -863,11 +863,13 @@ The output is plain text or JSON. JSON may be short or formatted.
 
 The tool allows the use of configuration files. It tests for existence of
 the files listed here. All existing files is read (in this order) if it is
-only writable by the author
+only writable by the author (mode C<0640> should do).
 
    $home/geoip.rc
    $home/.geoiprc
    $home/.config/geoip
+
+where C<$home> is either of C<$HOME>, C<$USERPROFILE>, or C<$HOMEPATH>.
 
 The format of the file is
 
@@ -939,8 +941,8 @@ command line option : C<-s> or C<--short>
 default value       : False
 
 This option will disable the output of less-informative information like
-location, EU-membership, satellite and proxy. This option, if True, will also 
-implicitly disable the C<distance> and C<whois> information.
+location, EU-membership, satellite and proxy. This option, if True, will
+also implicitly disable the C<distance> and C<whois> information.
 
 =item dsn
 
