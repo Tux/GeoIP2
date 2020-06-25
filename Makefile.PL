@@ -5,43 +5,59 @@ use ExtUtils::MakeMaker;
 
 -f "lib/App/geoip.pm" or system $^X, "./2lib";
 
-my %wmf = (
-    NAME               => "App::geoip",
-    DISTNAME           => "App-geoip",
-    ABSTRACT           => "Show geographical data based on hostname or IP address(es)",
-    AUTHOR             => "H.Merijn Brand",
-    EXE_FILES          => [ "geoip" ],
-    VERSION_FROM       => "lib/App/geoip.pm",
-    MIN_PERL_VERSION   => "5.14.0",
-    PREREQ_PM          => {
-	"DBI"			=> 0,
-	"Socket"		=> 0,
-	"Net::CIDR"		=> 0,
-	"Data::Dumper"		=> 0,
-	"Math::Trig"		=> 0,
-	"LWP::Simple"		=> 0,
-	"Archive::Zip"		=> 0,
-	"Text::CSV_XS"		=> "1.39",
-	"JSON::PP"		=> 0,
-	"Pod::Text"		=> 0,
-	"List::Util"		=> 0,
-	"Getopt::Long"		=> 0,
-	},
-    LICENSE            => "artistic_2",
-    CONFIGURE_REQUIRES => { "ExtUtils::MakeMaker" => 0 },
-    TEST_REQUIRES      => { "Test::More"          => 0 },
-    macro              => { TARFLAGS => "--format=ustar -c -v -f", },
-    );
-
-if (open my $fh, "<", $wmf{VERSION_FROM}) {
-    for (grep m/\$VERSION\s*=\s*\S/ => <$fh>) {
-	m/\b([0-9][0-9.]+)/ or next;
-	$wmf{VERSION} = $1;
-	delete $wmf{VERSION_FROM};
-	last;
-	}
-    close $fh;
+my $VERSION;
+open my $fh, "<", "geoip";
+while (<$fh>) {
+    m/VERSION\s*=\s*["']?([0-9.]+)/ or next;
+    $VERSION = $1;
+    last;
     }
+close $fh;
+
+my %wmf = (
+    NAME		=> "App::geoip",
+    DISTNAME		=> "App-geoip",
+    ABSTRACT		=> "Show geographical data based on hostname or IP address(es)",
+    AUTHOR		=> "H.Merijn Brand",
+    EXE_FILES		=> [ "geoip" ],
+    VERSION		=> $VERSION,
+    MIN_PERL_VERSION	=> "5.14.0",
+    PREREQ_PM		=> {
+	"DBI"		=> 0,
+	"Socket"	=> 0,
+	"Net::CIDR"	=> 0,
+	"Data::Dumper"	=> 0,
+	"Math::Trig"	=> 0,
+	"LWP::Simple"	=> 0,
+	"Archive::Zip"	=> 0,
+	"Text::CSV_XS"	=> "1.39",
+	"JSON::PP"	=> 0,
+	"Pod::Text"	=> 0,
+	"List::Util"	=> 0,
+	"Getopt::Long"	=> 0,
+	},
+    LICENSE		=> "artistic_2",
+    CONFIGURE_REQUIRES	=> { "ExtUtils::MakeMaker" => 0 },
+    TEST_REQUIRES	=> { "Test::More"          => 0 },
+    macro		=> { TARFLAGS => "--format=ustar -c -v -f", },
+
+    META_MERGE			=> {
+	"meta-spec"		=> { version => 2 },
+	licence			=> "artistic_2",
+	resources		=> {
+	    type		=> "git",
+	    url			=> "git://github.com/Tux/GeoIP2.git",
+	    web			=> "https://github.com/Tux/GeoIP2",
+	    IRC			=> "irc://irc.perl.org/#csv",
+	    },
+	provides		=> {
+	    "App::geoip"	=> {
+		file		=> "geoip",
+		version		=> $VERSION,
+		},
+	    },
+	},
+    );
 
 eval { ExtUtils::MakeMaker->VERSION (6.63_03) } or
     delete $wmf{TEST_REQUIRES};
