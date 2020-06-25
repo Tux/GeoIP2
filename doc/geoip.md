@@ -24,11 +24,13 @@ The output is plain text or JSON. JSON may be short or formatted.
 
 The tool allows the use of configuration files. It tests for existence of
 the files listed here. All existing files is read (in this order) if it is
-only writable by the author
+only writable by the author (mode `0640` should do).
 
     $home/geoip.rc
     $home/.geoiprc
     $home/.config/geoip
+
+where `$home` is either of `$HOME`, `$USERPROFILE`, or `$HOMEPATH`.
 
 The format of the file is
 
@@ -98,8 +100,8 @@ The recognized options and the command line equivalences are
     default value       : False
 
     This option will disable the output of less-informative information like
-    location, EU-membership, satellite and proxy. This option, if True, will also 
-    implicitly disable the `distance` and `whois` information.
+    location, EU-membership, satellite and proxy. This option, if True, will
+    also implicitly disable the `distance` and `whois` information.
 
 - dsn
 

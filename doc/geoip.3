@@ -162,13 +162,15 @@ The output is plain text or \s-1JSON. JSON\s0 may be short or formatted.
 .IX Subsection "Configuration"
 The tool allows the use of configuration files. It tests for existence of
 the files listed here. All existing files is read (in this order) if it is
-only writable by the author
+only writable by the author (mode \f(CW0640\fR should do).
 .PP
 .Vb 3
 \&   $home/geoip.rc
 \&   $home/.geoiprc
 \&   $home/.config/geoip
 .Ve
+.PP
+where \f(CW$home\fR is either of \f(CW$HOME\fR, \f(CW$USERPROFILE\fR, or \f(CW$HOMEPATH\fR.
 .PP
 The format of the file is
 .PP
@@ -235,8 +237,8 @@ command line option : \f(CW\*(C`\-s\*(C'\fR or \f(CW\*(C`\-\-short\*(C'\fR
 default value       : False
 .Sp
 This option will disable the output of less-informative information like
-location, EU-membership, satellite and proxy. This option, if True, will also 
-implicitly disable the \f(CW\*(C`distance\*(C'\fR and \f(CW\*(C`whois\*(C'\fR information.
+location, EU-membership, satellite and proxy. This option, if True, will
+also implicitly disable the \f(CW\*(C`distance\*(C'\fR and \f(CW\*(C`whois\*(C'\fR information.
 .IP "dsn" 2
 .IX Item "dsn"
 command line option : \f(CW\*(C`\-Ddsn\*(C'\fR or \f(CW\*(C`\-\-DB=dsn\*(C'\fR

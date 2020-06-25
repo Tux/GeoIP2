@@ -61,11 +61,13 @@
 
 <h2 id="Configuration">Configuration</h2>
 
-<p>The tool allows the use of configuration files. It tests for existence of the files listed here. All existing files is read (in this order) if it is only writable by the author</p>
+<p>The tool allows the use of configuration files. It tests for existence of the files listed here. All existing files is read (in this order) if it is only writable by the author (mode <code>0640</code> should do).</p>
 
 <pre><code>   $home/geoip.rc
    $home/.geoiprc
    $home/.config/geoip</code></pre>
+
+<p>where <code>$home</code> is either of <code>$HOME</code>, <code>$USERPROFILE</code>, or <code>$HOMEPATH</code>.</p>
 
 <p>The format of the file is</p>
 

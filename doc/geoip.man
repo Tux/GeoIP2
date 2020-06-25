@@ -25,11 +25,13 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mConfiguration[0m
        The tool allows the use of configuration files. It tests for existence
        of the files listed here. All existing files is read (in this order) if
-       it is only writable by the author
+       it is only writable by the author (mode 0640 should do).
 
           $home/geoip.rc
           $home/.geoiprc
           $home/.config/geoip
+
+       where $home is either of $HOME, $USERPROFILE, or $HOMEPATH.
 
        The format of the file is
 
