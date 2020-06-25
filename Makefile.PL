@@ -33,6 +33,16 @@ my %wmf = (
     macro              => { TARFLAGS => "--format=ustar -c -v -f", },
     );
 
+if (open my $fh, "<", $wmf{VERSION_FROM}) {
+    for (grep m/\$VERSION\s*=\s*\S/ => <$fh>) {
+	m/\b([0-9][0-9.]+)/ or next;
+	$wmf{VERSION} = $1;
+	delete $wmf{VERSION_FROM};
+	last;
+	}
+    close $fh;
+    }
+
 eval { ExtUtils::MakeMaker->VERSION (6.63_03) } or
     delete $wmf{TEST_REQUIRES};
 
