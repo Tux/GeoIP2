@@ -15,4 +15,5 @@ MANIFEST.SKIP
 ^\.travis.yml
 .*\.zip$
 ^old/
-.*\.tmp
+\.tmp$
+^xt/
