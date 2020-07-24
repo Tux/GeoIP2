@@ -742,7 +742,7 @@ for (sort { $a->{ip_from_n} <=> $b->{ip_to_n} ||
 	    $conf{json} or printf "   Distance  : \x{00b1} %.2f%s\n", $dist, $unit;
 	    }
 	}
-    if (!$conf{short} && $conf{whois} && $whois and my $wi = $whois->($_->{ip})) {
+    if ($conf{whois} && $whois and my $wi = $whois->($_->{ip})) {
 	my $address = join " " => grep { length } map { $wi->{$_} } qw(
 	    Address PostalCode StateProv Country address );
 	my %w = (
