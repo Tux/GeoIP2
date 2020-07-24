@@ -90,8 +90,8 @@ my $rv = WriteMakefile (%wmf);
 package MY;
 
 sub postamble {
-    my @mpm = (-d ".git" && -x "2lib")
-        ? ("", "lib/App/geoip.pm: geoip\n\tperl ./2lib\n")
+    my @mpm = (-d ".git" || -x "2lib")
+        ? ("", "lib/App/geoip.pm: geoip\n\t$^X ./2lib\n")
         : ();
     -d "xt" && ($ENV{AUTOMATED_TESTING} || 0) != 1 and
 	push @mpm =>

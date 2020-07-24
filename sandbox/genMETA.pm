@@ -2,7 +2,7 @@
 
 package genMETA;
 
-our $VERSION = "1.10-20190617";
+our $VERSION = "1.11-20200724";
 
 use 5.14.1;
 use warnings;
@@ -31,7 +31,19 @@ sub new {
 sub extract_version {
     my $fh = shift;
     while (<$fh>) {
-	m/^(?:our\s+)? \$VERSION \s*=\s* ["']? ([-0-9._]+) ['"]? \s*;\s*$/x or next;
+	m{^(?:our\s+)? \$VERSION \s*=\s*	# Declaration
+	    (?| ([-0-9._]+?)			# Unquoted version
+	      | ["']				# Opening quotation
+	        ([-0-9._]+?)			# Quoted version
+	        (?: \s* - \s*			# Optional date:
+		  (?:  [0-9]{8}			#   YYYYMMDD   or DDMMYYYY
+		    | [-0-9]{10}		#   YYYY-MM-DD or DD-MM-YYYY
+		    )
+		  )?
+	        ['"]?				# Closing quotation
+	      )
+	    \s*;\s*$				# Trailing ;
+	    }x or next;
 	return $1;
 	}
     } # extract_version
