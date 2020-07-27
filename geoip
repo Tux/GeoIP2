@@ -3,7 +3,7 @@
 use 5.14.0;
 use warnings;
 
-our $VERSION = "0.14 - 20200625";
+our $VERSION = "0.14 - 20200727";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {
@@ -22,7 +22,7 @@ sub usage {
     say "   -lL  --local=L      Specify local location LAT/LON";
     say "   -D   --DB=dsn       Specify geoip database DSN default: dbi:Pg:geoip";
     say "                       may be specified in \$GEOIP_DBI_DSN";
-    say "        --country=c    Find CIRDR's for country c";
+    say "        --country=c    Find CIDR's for country c";
     say "$CMD --man will show the full manual";
     exit $err;
     } # usage
