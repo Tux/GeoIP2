@@ -66,12 +66,12 @@ recommends:
     Archive::Zip:        1.68
     Data::Dumper:        2.174
     DBI:                 1.643
-    Getopt::Long:        2.51
+    Getopt::Long:        2.52
     JSON::PP:            4.05
-    LWP::Simple:         6.46
+    LWP::Simple:         6.49
     Math::Trig:          1.23
     Net::CIDR:           0.20
-    Pod::Usage:          1.70
+    Pod::Usage:          2.01
     Socket:              2.030
     Text::CSV_XS:        1.44
 configure_requires:
@@ -82,8 +82,8 @@ test_requires:
     Test::More:          0
 resources:
     license:             http://dev.perl.org/licenses/
-    repository:          https://github.com/Tux/GeoIP2
     homepage:            https://metacpan.org/pod/App::geoip
+    repository:          https://github.com/Tux/GeoIP2
     bugtracker:          https://github.com/Tux/GeoIP2/issues
     IRC:                 irc://irc.perl.org/#csv
 meta-spec:
