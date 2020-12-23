@@ -68,7 +68,7 @@ recommends:
     DBI:                 1.643
     Getopt::Long:        2.52
     JSON::PP:            4.05
-    LWP::Simple:         6.49
+    LWP::Simple:         6.50
     Math::Trig:          1.23
     Net::CIDR:           0.20
     Pod::Usage:          2.01
