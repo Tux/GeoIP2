@@ -283,7 +283,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        MaxMind, available from
        [http://www.maxmind.com](http://www.maxmind.com).
 
-        Copyright (C) 2018-2020 H.Merijn Brand.  All rights reserved.
+        Copyright (C) 2018-2021 H.Merijn Brand.  All rights reserved.
 
        This library is free software;  you can redistribute and/or modify it
        under the same terms as Perl itself.  See here
@@ -295,4 +295,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.0                      2020-10-24                          STDIN(1)
+perl v5.32.0                      2021-01-01                          STDIN(1)
