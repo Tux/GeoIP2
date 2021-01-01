@@ -68,12 +68,12 @@ recommends:
     DBI:                 1.643
     Getopt::Long:        2.52
     JSON::PP:            4.05
-    LWP::Simple:         6.50
+    LWP::Simple:         6.51
     Math::Trig:          1.23
     Net::CIDR:           0.20
     Pod::Usage:          2.01
     Socket:              2.030
-    Text::CSV_XS:        1.44
+    Text::CSV_XS:        1.45
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:
