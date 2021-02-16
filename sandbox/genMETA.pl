@@ -67,12 +67,12 @@ recommends:
     Data::Dumper:        2.174
     DBI:                 1.643
     Getopt::Long:        2.52
-    JSON::PP:            4.05
-    LWP::Simple:         6.51
+    JSON::PP:            4.06
+    LWP::Simple:         6.52
     Math::Trig:          1.23
     Net::CIDR:           0.20
     Pod::Usage:          2.01
-    Socket:              2.030
+    Socket:              2.031
     Text::CSV_XS:        1.45
 configure_requires:
     ExtUtils::MakeMaker: 0

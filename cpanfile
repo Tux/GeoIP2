@@ -15,12 +15,12 @@ recommends "Archive::Zip"             => "1.68";
 recommends "DBI"                      => "1.643";
 recommends "Data::Dumper"             => "2.174";
 recommends "Getopt::Long"             => "2.52";
-recommends "JSON::PP"                 => "4.05";
-recommends "LWP::Simple"              => "6.51";
+recommends "JSON::PP"                 => "4.06";
+recommends "LWP::Simple"              => "6.52";
 recommends "Math::Trig"               => "1.23";
 recommends "Net::CIDR"                => "0.20";
 recommends "Pod::Usage"               => "2.01";
-recommends "Socket"                   => "2.030";
+recommends "Socket"                   => "2.031";
 recommends "Text::CSV_XS"             => "1.45";
 
 on "configure" => sub {
