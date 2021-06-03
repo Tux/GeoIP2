@@ -47,11 +47,11 @@
 
 <h1 id="SYNOPSIS">SYNOPSIS</h1>
 
-<pre><code> geoip --help
+<pre><code>geoip --help
 
- geoip --fetch [--no-update]
+geoip --fetch [--no-update]
 
- geoip [options] host|IP ...</code></pre>
+geoip [options] [host|IP ...]</code></pre>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -63,18 +63,18 @@
 
 <p>The tool allows the use of configuration files. It tests for existence of the files listed here. All existing files is read (in this order) if it is only writable by the author (mode <code>0640</code> should do).</p>
 
-<pre><code>   $home/geoip.rc
-   $home/.geoiprc
-   $home/.config/geoip</code></pre>
+<pre><code>$home/geoip.rc
+$home/.geoiprc
+$home/.config/geoip</code></pre>
 
 <p>where <code>$home</code> is either of <code>$HOME</code>, <code>$USERPROFILE</code>, or <code>$HOMEPATH</code>.</p>
 
 <p>The format of the file is</p>
 
-<pre><code>  # Comment
-  ; Comment
-  option : value
-  option = value</code></pre>
+<pre><code># Comment
+; Comment
+option : value
+option = value</code></pre>
 
 <p>where the <code>:</code> and <code>=</code> are equal and whitespace around them is optional and ignored. The values <code>False</code> and <code>No</code> (case insensitive) are the same as <code>0</code> and the values <code>True</code> and <code>Yes</code> are equal to <code>1</code>. For readability you can prefix <code>use_</code> to most options (it is ignored). The use of <code>-</code> in option names is allowed and will be translated to <code>_</code>.</p>
 
@@ -248,40 +248,42 @@
 
 <h2 id="Configuration1">Configuration</h2>
 
-<pre><code> $ cat ~/.config/geoip
- use_distance    : True
- json-pretty     : yes</code></pre>
+<pre><code>$ cat ~/.config/geoip
+use_distance    : True
+json-pretty     : yes</code></pre>
 
 <h2 id="Basic-use">Basic use</h2>
 
-<pre><code> $ geoip --short 1.2.3.4</code></pre>
+<pre><code>$ geoip --short 1.2.3.4</code></pre>
 
 <h2 id="For-automation">For automation</h2>
 
-<pre><code> $ geoip --json --no-json-pretty 1.2.3.4</code></pre>
+<pre><code>$ geoip --json --no-json-pretty 1.2.3.4
+
+$ env GEOIP_HOST=1.2.3.4 geoip</code></pre>
 
 <h2 id="Full-report">Full report</h2>
 
-<pre><code> $ geoip --dist --whois 1.2.3.4</code></pre>
+<pre><code>$ geoip --dist --whois 1.2.3.4</code></pre>
 
 <h2 id="Selecting-CIDRs-for-countries">Selecting CIDR&#39;s for countries</h2>
 
 <h3 id="List-all-CIDRs-for-Vatican-City">List all CIDR&#39;s for Vatican City</h3>
 
-<pre><code> $ geoip --country=Vatican &gt; vatican-city.cidr</code></pre>
+<pre><code>$ geoip --country=Vatican &gt; vatican-city.cidr</code></pre>
 
 <h3 id="Statistics">Statistics</h3>
 
 <p>If you enable verbosity, the selected statistics will be presented at the end of the CIDR-list: number of CIDR&#39;s, number of enclosed IP&#39;s, name of the country and the continent. As the country name is just a perl regex, you can select all countries with <code>.</code>, or all countries that start with a <code>V</code>:</p>
 
-<pre><code> $ geoip --country=^V -v &gt;/dev/null
- Selected CIDR&#39;s
- # CIDR       # IP Country               Continent
- ------ ---------- --------------------- ---------------
-     21      18176 Vanuatu               Oceania
-    321      13056 Vatican City          Europe
-    272    6798500 Venezuela             South America
-    612   16014080 Vietnam               Asia</code></pre>
+<pre><code>$ geoip --country=^V -v &gt;/dev/null
+Selected CIDR&#39;s
+# CIDR       # IP Country               Continent
+------ ---------- --------------------- ---------------
+    21      18176 Vanuatu               Oceania
+   321      13056 Vatican City          Europe
+   272    6798500 Venezuela             South America
+   612   16014080 Vietnam               Asia</code></pre>
 
 <h1 id="TODO">TODO</h1>
 
@@ -329,13 +331,13 @@
 
 <p>This tool uses, but does not include, the GeoLite2 data created by MaxMind, available from [http://www.maxmind.com](http://www.maxmind.com).</p>
 
-<pre><code> Copyright (C) 2018-2021 H.Merijn Brand.  All rights reserved.</code></pre>
+<pre><code>Copyright (C) 2018-2021 H.Merijn Brand.  All rights reserved.</code></pre>
 
 <p>This library is free software; you can redistribute and/or modify it under the same terms as Perl itself. See <a href="https://opensource.org/licenses/Artistic-2.0">here</a> 3).</p>
 
-<pre><code> 1) https://creativecommons.org/licenses/by-sa/4.0/
- 2) https://www.maxmind.com/en/geolite2/eula
- 3) https://opensource.org/licenses/Artistic-2.0</code></pre>
+<pre><code>1) https://creativecommons.org/licenses/by-sa/4.0/
+2) https://www.maxmind.com/en/geolite2/eula
+3) https://opensource.org/licenses/Artistic-2.0</code></pre>
 
 
 </body>

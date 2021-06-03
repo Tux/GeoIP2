@@ -11,7 +11,7 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
         geoip --fetch [--no-update]
 
-        geoip [options] host|IP ...
+        geoip [options] [host|IP ...]
 
 [1mDESCRIPTION[0m
        This tool uses a database to use the (pre-fetched) GeoIP2 data from
@@ -216,6 +216,8 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
    [1mFor automation[0m
         $ geoip --json --no-json-pretty 1.2.3.4
 
+        $ env GEOIP_HOST=1.2.3.4 geoip
+
    [1mFull report[0m
         $ geoip --dist --whois 1.2.3.4
 
@@ -295,4 +297,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.32.0                      2021-01-01                          STDIN(1)
+perl v5.34.0                      2021-06-03                          STDIN(1)

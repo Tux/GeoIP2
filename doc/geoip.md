@@ -8,7 +8,7 @@ geoip - a tool to show geographical data based on hostname or IP address(es)
 
     geoip --fetch [--no-update]
 
-    geoip [options] host|IP ...
+    geoip [options] [host|IP ...]
 
 # DESCRIPTION
 
@@ -218,6 +218,8 @@ can copy or move to your liking. This file will be somewhere around 500 Mb.
 ## For automation
 
     $ geoip --json --no-json-pretty 1.2.3.4
+
+    $ env GEOIP_HOST=1.2.3.4 geoip
 
 ## Full report
 
