@@ -13,10 +13,10 @@ requires   "Text::CSV_XS"             => "1.39";
 
 recommends "Archive::Zip"             => "1.68";
 recommends "DBI"                      => "1.643";
-recommends "Data::Dumper"             => "2.181";
+recommends "Data::Dumper"             => "2.183";
 recommends "Getopt::Long"             => "2.52";
 recommends "JSON::PP"                 => "4.06";
-recommends "LWP::Simple"              => "6.54";
+recommends "LWP::Simple"              => "6.56";
 recommends "Math::Trig"               => "1.23";
 recommends "Net::CIDR"                => "0.21";
 recommends "Pod::Usage"               => "2.01";
