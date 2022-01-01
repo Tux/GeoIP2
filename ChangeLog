@@ -1,6 +1,7 @@
-0.15	- 2021-06-03, H.Merijn Brand
+0.15	- 2022-01-01, H.Merijn Brand
     * It is 2021
     * Use $GEOIP_HOST as default for IP/Host
+    * It is 2022
 
 0.14	- 2020-12-23, H.Merijn Brand
     * geological -> geographical (Shlomi Fish)
