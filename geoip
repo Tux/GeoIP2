@@ -1155,6 +1155,8 @@ L<Geo::IP6>, L<Geo::IPfree>, L<Geo::IP::RU::IpGeoBase>, L<IP::Country>,
 L<IP::Country::DB_File>, L<IP::Country::DNSBL>, L<IP::Info>, L<IP::Location>,
 L<IP::QQWry>, L<IP::World>, L<Metabrik::Lookup::Iplocation>, L<Pcore::GeoIP>
 
+L<IP::Geolocation::MMDB>
+
 Check L<CPAN|https://metacpan.org/search?q=geoip> for more.
 
 =head1 THANKS
@@ -1163,7 +1165,7 @@ Thanks to cavac for the inspiration
 
 =head1 AUTHOR
 
-H.Merijn Brand F<E<lt>h.m.brand@xs4all.nlE<gt>>, aka Tux.
+H.Merijn Brand F<E<lt>hmbrand@cpan.orgE<gt>>, aka Tux.
 
 =head1 COPYRIGHT AND LICENSE
 
