@@ -275,6 +275,8 @@ a `V`:
 [IP::Country::DB\_File](https://metacpan.org/pod/IP%3A%3ACountry%3A%3ADB_File), [IP::Country::DNSBL](https://metacpan.org/pod/IP%3A%3ACountry%3A%3ADNSBL), [IP::Info](https://metacpan.org/pod/IP%3A%3AInfo), [IP::Location](https://metacpan.org/pod/IP%3A%3ALocation),
 [IP::QQWry](https://metacpan.org/pod/IP%3A%3AQQWry), [IP::World](https://metacpan.org/pod/IP%3A%3AWorld), [Metabrik::Lookup::Iplocation](https://metacpan.org/pod/Metabrik%3A%3ALookup%3A%3AIplocation), [Pcore::GeoIP](https://metacpan.org/pod/Pcore%3A%3AGeoIP)
 
+[IP::Geolocation::MMDB](https://metacpan.org/pod/IP%3A%3AGeolocation%3A%3AMMDB)
+
 Check [CPAN](https://metacpan.org/search?q=geoip) for more.
 
 # THANKS
@@ -283,7 +285,7 @@ Thanks to cavac for the inspiration
 
 # AUTHOR
 
-H.Merijn Brand `<h.m.brand@xs4all.nl>`, aka Tux.
+H.Merijn Brand `<hmbrand@cpan.org>`, aka Tux.
 
 # COPYRIGHT AND LICENSE
 

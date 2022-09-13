@@ -1,9 +1,9 @@
 #!/pro/bin/perl
 
-use 5.14.0;
+use 5.014000;
 use warnings;
 
-our $VERSION = "0.16 - 20210603";
+our $VERSION = "0.17 - 20220913";
 our $CMD = $0 =~ s{.*/}{}r;
 
 sub usage {

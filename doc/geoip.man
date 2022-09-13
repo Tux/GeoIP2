@@ -265,13 +265,15 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
        IP::Country::DNSBL, IP::Info, IP::Location, IP::QQWry, IP::World,
        Metabrik::Lookup::Iplocation, Pcore::GeoIP
 
+       IP::Geolocation::MMDB
+
        Check CPAN <https://metacpan.org/search?q=geoip> for more.
 
 [1mTHANKS[0m
        Thanks to cavac for the inspiration
 
 [1mAUTHOR[0m
-       H.Merijn Brand [4m<h.m.brand@xs4all.nl>[24m, aka Tux.
+       H.Merijn Brand [4m<hmbrand@cpan.org>[24m, aka Tux.
 
 [1mCOPYRIGHT AND LICENSE[0m
        The GeoLite2 end-user license agreement, which incorporates components
@@ -297,4 +299,4 @@ STDIN(1)              User Contributed Perl Documentation             STDIN(1)
 
 
 
-perl v5.34.0                      2022-01-01                          STDIN(1)
+perl v5.36.0                      2022-09-13                          STDIN(1)
