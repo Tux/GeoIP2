@@ -66,14 +66,14 @@ recommends:
     Archive::Zip:        1.68
     Data::Dumper:        2.184
     DBI:                 1.643
-    Getopt::Long:        2.52
-    JSON::PP:            4.11
+    Getopt::Long:        2.54
+    JSON::PP:            4.16
     LWP::Simple:         6.67
     Math::Trig:          1.23
     Net::CIDR:           0.21
     Pod::Usage:          2.03
     Socket:              2.036
-    Text::CSV_XS:        1.48
+    Text::CSV_XS:        1.49
 configure_requires:
     ExtUtils::MakeMaker: 0
 build_requires:
