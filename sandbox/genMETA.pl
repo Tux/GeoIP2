@@ -41,7 +41,7 @@ version:                 VERSION
 abstract:                Show geographical data based on hostname or IP address(es)
 license:                 perl
 author:
-    - H.Merijn Brand <h.m.brand@xs4all.nl>
+    - H.Merijn Brand <hmbrand@cpan.org>
 generated_by:            Author
 distribution_type:       module
 provides:
@@ -64,18 +64,22 @@ requires:
     Text::CSV_XS:        1.39
 recommends:
     Archive::Zip:        1.68
-    Data::Dumper:        2.184
+    Data::Dumper:        2.188
     DBI:                 1.643
     Getopt::Long:        2.54
     JSON::PP:            4.16
-    LWP::Simple:         6.67
-    Math::Trig:          1.23
+    LWP::Simple:         6.72
+    Math::Trig:          1.62
     Net::CIDR:           0.21
     Pod::Usage:          2.03
-    Socket:              2.036
-    Text::CSV_XS:        1.49
+    Socket:              2.037
+    Text::CSV_XS:        1.52
 configure_requires:
     ExtUtils::MakeMaker: 0
+configure_recommends:
+    ExtUtils::MakeMaker: 7.22
+configure_suggests:
+    ExtUtils::MakeMaker: 7.70
 build_requires:
     Config:              0
 test_requires:
