@@ -125,8 +125,8 @@ sub postamble {
 	'	pod2html      < $? 2>&1 | grep -v "^Cannot find" > $@',
 	'doc/geoip.3:		geoip',
 	'	pod2man       < $? > $@',
-	'doc/geoip.man:	doc/geoip.3',
-	'	nroff -mandoc < $? > $@',
+	'doc/geoip.man:		doc/geoip.3',
+	'	nroff2man     < $? > $@',
         @mpm;
     } # postamble
 
