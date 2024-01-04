@@ -14,14 +14,14 @@ requires   "Text::CSV_XS"             => "1.39";
 recommends "Archive::Zip"             => "1.68";
 recommends "DBI"                      => "1.643";
 recommends "Data::Dumper"             => "2.188";
-recommends "Getopt::Long"             => "2.54";
+recommends "Getopt::Long"             => "2.57";
 recommends "JSON::PP"                 => "4.16";
 recommends "LWP::Simple"              => "6.72";
 recommends "Math::Trig"               => "1.62";
 recommends "Net::CIDR"                => "0.21";
 recommends "Pod::Usage"               => "2.03";
 recommends "Socket"                   => "2.037";
-recommends "Text::CSV_XS"             => "1.52";
+recommends "Text::CSV_XS"             => "1.53";
 
 on "configure" => sub {
     requires   "ExtUtils::MakeMaker";

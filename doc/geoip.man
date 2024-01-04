@@ -295,4 +295,4 @@ COPYRIGHT AND LICENSE
         2) https://www.maxmind.com/en/geolite2/eula
         3) https://opensource.org/licenses/Artistic-2.0
 
-perl v5.38.0                      2023-10-12                          STDIN(1)
+perl v5.38.2                      2024-01-04                          STDIN(1)
