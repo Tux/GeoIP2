@@ -64,16 +64,16 @@ requires:
     Text::CSV_XS:        1.39
 recommends:
     Archive::Zip:        1.68
-    Data::Dumper:        2.188
+    Data::Dumper:        2.189
     DBI:                 1.643
-    Getopt::Long:        2.57
+    Getopt::Long:        2.58
     JSON::PP:            4.16
-    LWP::Simple:         6.72
+    LWP::Simple:         6.77
     Math::Trig:          1.62
     Net::CIDR:           0.21
     Pod::Usage:          2.03
-    Socket:              2.037
-    Text::CSV_XS:        1.53
+    Socket:              2.038
+    Text::CSV_XS:        1.55
 configure_requires:
     ExtUtils::MakeMaker: 0
 configure_recommends:
