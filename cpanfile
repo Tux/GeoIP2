@@ -12,7 +12,7 @@ requires   "Socket";
 requires   "Text::CSV_XS"             => "1.39";
 
 recommends "Archive::Zip"             => "1.68";
-recommends "DBI"                      => "1.643";
+recommends "DBI"                      => "1.645";
 recommends "Data::Dumper"             => "2.189";
 recommends "Getopt::Long"             => "2.58";
 recommends "JSON::PP"                 => "4.16";
@@ -21,7 +21,7 @@ recommends "Math::Trig"               => "1.62";
 recommends "Net::CIDR"                => "0.21";
 recommends "Pod::Usage"               => "2.03";
 recommends "Socket"                   => "2.038";
-recommends "Text::CSV_XS"             => "1.55";
+recommends "Text::CSV_XS"             => "1.58";
 
 on "configure" => sub {
     requires   "ExtUtils::MakeMaker";
