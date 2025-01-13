@@ -65,7 +65,7 @@ requires:
 recommends:
     Archive::Zip:        1.68
     Data::Dumper:        2.189
-    DBI:                 1.645
+    DBI:                 1.646
     Getopt::Long:        2.58
     JSON::PP:            4.16
     LWP::Simple:         6.77
@@ -73,7 +73,7 @@ recommends:
     Net::CIDR:           0.21
     Pod::Usage:          2.03
     Socket:              2.038
-    Text::CSV_XS:        1.58
+    Text::CSV_XS:        1.59
 configure_requires:
     ExtUtils::MakeMaker: 0
 configure_recommends:
