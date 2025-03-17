@@ -9,4 +9,4 @@ eval {
     no warnings "once";
     *Test::XTFiles::all_files = sub { "geoip"; };
     };
-Test::Pod::Links->new->all_pod_files_ok;
+Test::Pod::Links->new (ignore_match => qr{^https://www.maxmind.com})->all_pod_files_ok;
