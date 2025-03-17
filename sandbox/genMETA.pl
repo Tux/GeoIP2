@@ -65,21 +65,21 @@ requires:
 recommends:
     Archive::Zip:        1.68
     Data::Dumper:        2.189
-    DBI:                 1.646
+    DBI:                 1.648
     Getopt::Long:        2.58
     JSON::PP:            4.16
-    LWP::Simple:         6.77
+    LWP::Simple:         6.78
     Math::Trig:          1.62
-    Net::CIDR:           0.21
+    Net::CIDR:           0.23
     Pod::Usage:          2.03
     Socket:              2.038
-    Text::CSV_XS:        1.59
+    Text::CSV_XS:        1.60
 configure_requires:
     ExtUtils::MakeMaker: 0
 configure_recommends:
     ExtUtils::MakeMaker: 7.22
 configure_suggests:
-    ExtUtils::MakeMaker: 7.70
+    ExtUtils::MakeMaker: 7.72
 build_requires:
     Config:              0
 test_requires:
