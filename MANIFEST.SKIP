@@ -12,6 +12,7 @@ MANIFEST.SKIP
 ^MYMETA
 ^\.releaserc
 ^\.travis.yml
+^\.test_info\.
 .*\.zip$
 ^old/
 \.tmp$
