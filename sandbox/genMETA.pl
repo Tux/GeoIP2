@@ -64,22 +64,22 @@ requires:
     Text::CSV_XS:        1.39
 recommends:
     Archive::Zip:        1.68
-    Data::Dumper:        2.189
-    DBI:                 1.648
+    Data::Dumper:        2.183
+    DBI:                 1.647
     Getopt::Long:        2.58
     JSON::PP:            4.16
-    LWP::Simple:         6.78
-    Math::Trig:          1.62
-    Net::CIDR:           0.23
-    Pod::Usage:          2.03
-    Socket:              2.038
-    Text::CSV_XS:        1.60
+    LWP::Simple:         6.81
+    Math::Trig:          1.63
+    Net::CIDR:           0.27
+    Pod::Usage:          2.05
+    Socket:              2.040
+    Text::CSV_XS:        1.61
 configure_requires:
     ExtUtils::MakeMaker: 0
 configure_recommends:
     ExtUtils::MakeMaker: 7.22
 configure_suggests:
-    ExtUtils::MakeMaker: 7.72
+    ExtUtils::MakeMaker: 7.76
 build_requires:
     Config:              0
 test_requires:
