@@ -12,23 +12,23 @@ requires   "Socket";
 requires   "Text::CSV_XS"             => "1.39";
 
 recommends "Archive::Zip"             => "1.68";
-recommends "DBI"                      => "1.647";
-recommends "Data::Dumper"             => "2.183";
+recommends "DBI"                      => "1.652";
+recommends "Data::Dumper"             => "2.192";
 recommends "Getopt::Long"             => "2.58";
-recommends "JSON::PP"                 => "4.16";
-recommends "LWP::Simple"              => "6.81";
+recommends "JSON::PP"                 => "4.18";
+recommends "LWP::Simple"              => "6.83";
 recommends "Math::Trig"               => "1.63";
 recommends "Net::CIDR"                => "0.27";
 recommends "Pod::Usage"               => "2.05";
-recommends "Socket"                   => "2.040";
-recommends "Text::CSV_XS"             => "1.61";
+recommends "Socket"                   => "2.043";
+recommends "Text::CSV_XS"             => "1.64";
 
 on "configure" => sub {
     requires   "ExtUtils::MakeMaker";
 
     recommends "ExtUtils::MakeMaker"      => "7.22";
 
-    suggests   "ExtUtils::MakeMaker"      => "7.76";
+    suggests   "ExtUtils::MakeMaker"      => "7.78";
     };
 
 on "build" => sub {

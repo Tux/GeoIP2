@@ -159,7 +159,7 @@ Thanks to cavac for the inspiration
 
 ## AUTHOR
 
-H.Merijn Brand <hmbrand@cpan.org>
+H.Merijn Brand <perl5@tux.freedom.nl>
 
 ## COPYRIGHT AND LICENSE
 
